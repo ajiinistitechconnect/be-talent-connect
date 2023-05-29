@@ -76,7 +76,7 @@ func (r *UserController) updateHandler(c *gin.Context) {
 		}
 	}
 
-	if err := r.uc.SaveData(&payload); err != nil {
+	if err := r.uc.UpdateData(&payload); err != nil {
 		r.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -99,7 +99,7 @@ func NewUserController(r *gin.Engine, uc usecase.UserUsecase) *UserController {
 		uc:     uc,
 	}
 	r.GET("/users", controller.listHandler)
-	r.PUT("/users/", controller.updateHandler)
+	r.PUT("/users", controller.updateHandler)
 	r.POST("/users", controller.createHandler)
 	// r.DELETE("/farmers/:id", controller.deleteHandler)
 	return &controller

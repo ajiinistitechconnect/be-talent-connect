@@ -8,6 +8,7 @@ import (
 type UserUsecase interface {
 	BaseUsecase[model.User]
 	UpdateRole(payload *model.User, role []string) error
+	UpdateData(payload *model.User) error
 }
 
 type userUsecase struct {
@@ -25,6 +26,10 @@ func (u *userUsecase) FindById(id string) (*model.User, error) {
 
 func (u *userUsecase) SaveData(payload *model.User) error {
 	return u.repo.Save(payload)
+}
+
+func (u *userUsecase) UpdateData(payload *model.User) error {
+	return u.repo.Update(payload)
 }
 
 func (u *userUsecase) UpdateRole(payload *model.User, role []string) error {

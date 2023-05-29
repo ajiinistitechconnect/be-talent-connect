@@ -9,6 +9,7 @@ import (
 
 type UserRepo interface {
 	BaseRepository[model.User]
+	Update(*model.User) error
 }
 
 type userRepo struct {
@@ -18,6 +19,16 @@ type userRepo struct {
 func (u *userRepo) Save(payload *model.User) error {
 	err := u.db.Save(&payload)
 	if err.Error != nil {
+		return err.Error
+	}
+	return nil
+}
+
+func (u *userRepo) Update(payload *model.User) error {
+	if err := u.db.Model(&payload).Association("Roles").Replace(payload.Roles); err != nil {
+		return err
+	}
+	if err := u.db.Save(&payload); err.Error != nil {
 		return err.Error
 	}
 	return nil
