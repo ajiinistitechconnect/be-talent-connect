@@ -2,11 +2,11 @@ package model
 
 type User struct {
 	BaseModel
-	CreatedBy string
-	UpdatedBy string
-	Email     string
+	CreatedBy string `gorm:"default:admin"`
+	UpdatedBy string `gorm:"default:admin"`
+	Email     string `gorm:"unique"`
 	Password  string
-	IsActive  bool
+	IsActive  bool `gorm:"default:false"`
 	FirstName string
 	LastName  string
 	Roles     []Role `gorm:"many2many:users_roles"`
