@@ -19,6 +19,8 @@ type Server struct {
 func (s *Server) initController() {
 	controller.NewRoleController(s.engine, s.ucManager.RoleUc())
 	controller.NewUserController(s.engine, s.ucManager.UserUc())
+	controller.NewProgramController(s.engine, s.ucManager.ProgramUc())
+	controller.NewActivityController(s.engine, s.ucManager.ActivityUc())
 }
 
 func (s *Server) Run() {
@@ -48,6 +50,8 @@ func NewServer() *Server {
 		infra.Migrate(
 			&model.User{},
 			&model.Role{},
+			&model.Program{},
+			&model.Activity{},
 		)
 	})
 

@@ -7,6 +7,8 @@ import (
 type UsecaseManager interface {
 	UserUc() usecase.UserUsecase
 	RoleUc() usecase.RoleUsecase
+	ProgramUc() usecase.ProgramUsecase
+	ActivityUc() usecase.ActivityUsecase
 }
 
 type usecaseManager struct {
@@ -19,6 +21,14 @@ func (u *usecaseManager) RoleUc() usecase.RoleUsecase {
 
 func (u *usecaseManager) UserUc() usecase.UserUsecase {
 	return usecase.NewUserUseCase(u.repo.UserRepo(), u.RoleUc())
+}
+
+func (u *usecaseManager) ProgramUc() usecase.ProgramUsecase {
+	return usecase.NewProgramUsecase(u.repo.ProgramRepo())
+}
+
+func (u *usecaseManager) ActivityUc() usecase.ActivityUsecase {
+	return usecase.NewActivityUsecase(u.repo.ActivityRepo(), u.ProgramUc())
 }
 
 func NewUsecaseManager(repo RepoManager) UsecaseManager {
