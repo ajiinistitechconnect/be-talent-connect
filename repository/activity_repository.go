@@ -17,7 +17,7 @@ type activityRepo struct {
 
 // Delete implements ActivityRepo
 func (a *activityRepo) Delete(id string) error {
-	result := a.db.Delete(&model.Program{
+	result := a.db.Delete(&model.Activity{
 		BaseModel: model.BaseModel{
 			ID: id,
 		},
