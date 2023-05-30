@@ -1,6 +1,6 @@
 package model
 
-type QuestionCategoryTemplate struct {
+type QuestionCategory struct {
 	BaseModel
 	Name        string
 	Description string

@@ -3,6 +3,8 @@ package model
 type EvaluationQuestion struct {
 	BaseModel
 	Evaluation
-	EvaluationID   string
-	CategoryWeight int
+	EvaluationID     string
+	CategoryID       string
+	QuestionCategory QuestionCategory
+	CategoryWeight   float64
 }

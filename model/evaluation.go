@@ -5,6 +5,6 @@ type Evaluation struct {
 	PanelistID    string
 	Panelist      User
 	ParticipantID string
-	Participant   User
-	Score         int
+	Participant   Participant
+	Score         float64 `gorm:"default:0.0"`
 }
