@@ -5,8 +5,8 @@ type User struct {
 	CreatedBy string `gorm:"default:admin"`
 	UpdatedBy string `gorm:"default:admin"`
 	Email     string `gorm:"unique"`
-	Password  string
-	IsActive  bool `gorm:"default:false"`
+	Password  string `json:"-"`
+	IsActive  bool   `gorm:"default:false"`
 	FirstName string
 	LastName  string
 	Roles     []Role `gorm:"many2many:users_roles"`

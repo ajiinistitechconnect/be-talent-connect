@@ -4,7 +4,9 @@ import (
 	"errors"
 	"log"
 	"os"
+	"time"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/joho/godotenv"
 )
 
@@ -21,9 +23,33 @@ type ApiConfig struct {
 	ApiPort string
 }
 
+type SMTPConfig struct {
+	SMTPHost       string
+	SMTPPort       string
+	SMTPSenderName string
+	SMTPEmail      string
+	SMTPPassword   string
+}
+
+type TokenConfig struct {
+	ApplicationName     string
+	JwtSignatureKey     string
+	JwtSigningMethod    *jwt.SigningMethodHMAC
+	AccessTokenLifeTime time.Duration
+}
+
+type RedisConfig struct {
+	Address  string
+	Password string
+	Db       int
+}
+
 type Config struct {
 	DbConfig
 	ApiConfig
+	SMTPConfig
+	TokenConfig
+	RedisConfig
 }
 
 func (c *Config) ReadConfigFile() error {
@@ -47,7 +73,30 @@ func (c *Config) ReadConfigFile() error {
 		ApiPort: os.Getenv("API_PORT"),
 	}
 
-	if c.DbConfig.Host == "" || c.DbConfig.Name == "" || c.DbConfig.Password == "" || c.DbConfig.Port == "" || c.DbConfig.User == "" || c.ApiConfig.ApiHost == "" || c.ApiConfig.ApiPort == "" {
+	// c.SMTPConfig = SMTPConfig{
+	// 	SMTPHost:       os.Getenv("SMTP_HOST"),
+	// 	SMTPPort:       os.Getenv("SMTP_PORT"),
+	// 	SMTPSenderName: os.Getenv("SMTP_SENDER"),
+	// 	SMTPEmail:      os.Getenv("SMTP_EMAIL"),
+	// 	SMTPPassword:   os.Getenv("SMTP_PASS"),
+	// }
+
+	c.TokenConfig = TokenConfig{
+		ApplicationName:     "TALENTCONNECT",
+		JwtSignatureKey:     "x/A?D(G+KaPdSgVkYp3s6v9y$B&E)H@M",
+		JwtSigningMethod:    jwt.SigningMethodHS256,
+		AccessTokenLifeTime: time.Hour * 1,
+	}
+
+	c.RedisConfig = RedisConfig{
+		Address:  "localhost:6379",
+		Password: "",
+		Db:       0,
+	}
+	// c.SMTPEmail == "" || c.SMTPHost == "" || c.SMTPPassword == "" || c.SMTPPort == "" || c.SMTPSenderName == ""
+
+	if c.DbConfig.Host == "" || c.DbConfig.Name == "" || c.DbConfig.Password == "" || c.DbConfig.Port == "" || c.DbConfig.User == "" ||
+		c.ApiConfig.ApiHost == "" || c.ApiConfig.ApiPort == "" {
 		return errors.New("Missing required field")
 	}
 	return nil

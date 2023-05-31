@@ -25,7 +25,7 @@ func (i *infraManager) Conn() *gorm.DB {
 
 func (i *infraManager) initDb() error {
 	psqlConn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		i.cfg.Host, i.cfg.Port, i.cfg.User, i.cfg.Password, i.cfg.Name)
+		i.cfg.Host, i.cfg.Port, i.cfg.User, i.cfg.DbConfig.Password, i.cfg.Name)
 	db, err := gorm.Open(postgres.Open(psqlConn), &gorm.Config{})
 	if err != nil {
 		return err

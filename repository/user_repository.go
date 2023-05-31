@@ -10,6 +10,7 @@ import (
 type UserRepo interface {
 	BaseRepository[model.User]
 	Update(*model.User) error
+	SearchByEmail(email string) (*model.User, error)
 }
 
 type userRepo struct {
@@ -34,34 +35,43 @@ func (u *userRepo) Update(payload *model.User) error {
 	return nil
 }
 
-func (r *userRepo) Get(id string) (*model.User, error) {
+func (u *userRepo) Get(id string) (*model.User, error) {
 	var user model.User
-	err := r.db.Preload("Roles").First(&user, "id = ?", id).Error
+	err := u.db.Preload("Roles").First(&user, "id = ?", id).Error
 	if err != nil {
 		return nil, err
 	}
 	return &user, nil
 }
 
-func (r *userRepo) List() ([]model.User, error) {
+func (u *userRepo) List() ([]model.User, error) {
 	var users []model.User
-	err := r.db.Preload("Roles").Find(&users).Error
+	err := u.db.Preload("Roles").Find(&users).Error
 	if err != nil {
 		return nil, err
 	}
 	return users, nil
 }
 
-func (r *userRepo) Delete(id string) error {
-	result := r.db.Delete(&model.User{
+func (u *userRepo) Delete(id string) error {
+	result := u.db.Delete(&model.User{
 		BaseModel: model.BaseModel{ID: id},
 	})
 	if result.Error != nil {
 		return result.Error
 	} else if result.RowsAffected == 0 {
-		return fmt.Errorf("Role not found!")
+		return fmt.Errorf("Uer not found!")
 	}
 	return nil
+}
+
+func (u *userRepo) SearchByEmail(email string) (*model.User, error) {
+	var user model.User
+	err := u.db.Preload("Roles").First(&user, "email = ?", email).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
 }
 
 func NewUserRepo(db *gorm.DB) UserRepo {
