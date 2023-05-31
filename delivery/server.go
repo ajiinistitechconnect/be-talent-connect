@@ -19,6 +19,7 @@ type Server struct {
 func (s *Server) initController() {
 	controller.NewRoleController(s.engine, s.ucManager.RoleUc())
 	controller.NewUserController(s.engine, s.ucManager.UserUc())
+	controller.NewMentoringScheduleController(s.engine, s.ucManager.MentoringScheduleUsecase())
 }
 
 func (s *Server) Run() {
@@ -48,6 +49,8 @@ func NewServer() *Server {
 		infra.Migrate(
 			&model.User{},
 			&model.Role{},
+			&model.MentorMentee{},
+			&model.MentoringSchedule{},
 		)
 	})
 

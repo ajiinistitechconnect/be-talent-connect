@@ -4,7 +4,6 @@ import "time"
 
 type MentoringSchedule struct {
 	BaseModel
-	MentorMenteeID string
-	MentorMentee
+	MentorMentees []MentorMentee `gorm:"many2many:mentor_mentee_schedules"`
 	MentoringDate time.Time
 }
