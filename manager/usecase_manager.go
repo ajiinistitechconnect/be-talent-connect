@@ -26,11 +26,11 @@ func (u *usecaseManager) UserUc() usecase.UserUsecase {
 }
 
 func (u *usecaseManager) MentoringScheduleUc() usecase.MentoringScheduleUsecase {
-	return usecase.NewMentoringScheduleUsecase(u.repo.MentoringScheduleRepo())
+	return usecase.NewMentoringScheduleUsecase(u.repo.MentoringScheduleRepo(), u.repo.MentorMenteeRepo())
 }
 
 func (u *usecaseManager) MentorMenteeUc() usecase.MentorMenteeUsecase {
-	return usecase.NewMentorMenteeUsecase(u.repo.MentorMenteeRepo())
+	return usecase.NewMentorMenteeUsecase(u.repo.MentorMenteeRepo(), u.repo.UserRepo(), u.repo.ProgramRepo())
 }
 
 func (u *usecaseManager) ProgramUc() usecase.ProgramUsecase {

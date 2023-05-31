@@ -5,6 +5,7 @@ import (
 
 	"github.com/alwinihza/talent-connect-be/model"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type MentorMenteeRepo interface {
@@ -25,7 +26,7 @@ func (m *mentorMenteeRepo) Save(payload *model.MentorMentee) error {
 
 func (m *mentorMenteeRepo) Get(id string) (*model.MentorMentee, error) {
 	var mentorMentee model.MentorMentee
-	err := m.db.First(&mentorMentee, "id = ?", id).Error
+	err := m.db.Preload(clause.Associations).First(&mentorMentee, "id = ?", id).Error
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +35,7 @@ func (m *mentorMenteeRepo) Get(id string) (*model.MentorMentee, error) {
 
 func (m *mentorMenteeRepo) List() ([]model.MentorMentee, error) {
 	var mentorMentees []model.MentorMentee
-	err := m.db.Find(&mentorMentees).Error
+	err := m.db.Preload(clause.Associations).Find(&mentorMentees).Error
 	if err != nil {
 		return nil, err
 	}

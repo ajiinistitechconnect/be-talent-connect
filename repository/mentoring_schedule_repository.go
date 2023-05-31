@@ -9,6 +9,7 @@ import (
 
 type MentoringScheduleRepo interface {
 	BaseRepository[model.MentoringSchedule]
+	RemoveAllMentorMentees(mentoringScheduleID string) error
 }
 
 type mentoringScheduleRepo struct {
@@ -25,7 +26,11 @@ func (m *mentoringScheduleRepo) Save(payload *model.MentoringSchedule) error {
 
 func (m *mentoringScheduleRepo) Get(id string) (*model.MentoringSchedule, error) {
 	var mentoringSchedule model.MentoringSchedule
-	err := m.db.First(&mentoringSchedule, "id = ?", id).Error
+	err := m.db.Preload("MentorMentees").
+		Preload("MentorMentees.Mentor").
+		Preload("MentorMentees.Participant").
+		Preload("MentorMentees.Program").
+		First(&mentoringSchedule, "id = ?", id).Error
 	if err != nil {
 		return nil, err
 	}
@@ -34,11 +39,30 @@ func (m *mentoringScheduleRepo) Get(id string) (*model.MentoringSchedule, error)
 
 func (m *mentoringScheduleRepo) List() ([]model.MentoringSchedule, error) {
 	var mentoringSchedules []model.MentoringSchedule
-	err := m.db.Find(&mentoringSchedules).Error
+	err := m.db.Preload("MentorMentees").
+		Preload("MentorMentees.Mentor").
+		Preload("MentorMentees.Participant").
+		Preload("MentorMentees.Program").
+		Find(&mentoringSchedules).Error
 	if err != nil {
 		return nil, err
 	}
 	return mentoringSchedules, nil
+}
+
+func (m *mentoringScheduleRepo) RemoveAllMentorMentees(mentoringScheduleID string) error {
+	mentoringSchedule := &model.MentoringSchedule{
+		BaseModel: model.BaseModel{
+			ID: mentoringScheduleID,
+		},
+	}
+
+	err := m.db.Model(mentoringSchedule).Association("MentorMentees").Clear()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (m *mentoringScheduleRepo) Delete(id string) error {

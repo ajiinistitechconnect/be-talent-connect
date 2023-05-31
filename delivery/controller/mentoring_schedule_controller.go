@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/alwinihza/talent-connect-be/delivery/api"
-	"github.com/alwinihza/talent-connect-be/model"
+	"github.com/alwinihza/talent-connect-be/delivery/api/request"
 	"github.com/alwinihza/talent-connect-be/usecase"
 	"github.com/gin-gonic/gin"
 )
@@ -25,7 +25,7 @@ func (u *MentoringScheduleController) listHandler(c *gin.Context) {
 }
 
 func (r *MentoringScheduleController) createHandler(c *gin.Context) {
-	var payload model.MentoringSchedule
+	var payload request.MentoringScheduleRequest
 	if err := r.ParseRequestBody(c, &payload); err != nil {
 		r.NewFailedResponse(c, http.StatusBadRequest, err.Error())
 		return
@@ -40,7 +40,7 @@ func (r *MentoringScheduleController) createHandler(c *gin.Context) {
 }
 
 func (r *MentoringScheduleController) updateHandler(c *gin.Context) {
-	var payload model.MentoringSchedule
+	var payload request.MentoringScheduleRequest
 	if err := r.ParseRequestBody(c, &payload); err != nil {
 		r.NewFailedResponse(c, http.StatusBadRequest, err.Error())
 		return

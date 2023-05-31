@@ -10,7 +10,9 @@ type MentorMenteeUsecase interface {
 }
 
 type mentorMenteeUsecase struct {
-	repo repository.MentorMenteeRepo
+	repo    repository.MentorMenteeRepo
+	user    repository.UserRepo
+	program repository.ProgramRepo
 }
 
 func (m *mentorMenteeUsecase) FindAll() ([]model.MentorMentee, error) {
@@ -22,6 +24,24 @@ func (m *mentorMenteeUsecase) FindById(id string) (*model.MentorMentee, error) {
 }
 
 func (m *mentorMenteeUsecase) SaveData(payload *model.MentorMentee) error {
+	program, err := m.program.Get(payload.ProgramID)
+	if err != nil {
+		return err
+	}
+	payload.Program = *program
+
+	mentor, err := m.user.Get(payload.MentorID)
+	if err != nil {
+		return err
+	}
+	payload.Mentor = *mentor
+
+	mentee, err := m.user.Get(payload.ParticipantID)
+	if err != nil {
+		return err
+	}
+	payload.Participant = *mentee
+
 	return m.repo.Save(payload)
 }
 
@@ -29,8 +49,14 @@ func (m *mentorMenteeUsecase) DeleteData(id string) error {
 	return m.repo.Delete(id)
 }
 
-func NewMentorMenteeUsecase(repo repository.MentorMenteeRepo) MentorMenteeUsecase {
+func NewMentorMenteeUsecase(
+	repo repository.MentorMenteeRepo,
+	user repository.UserRepo,
+	program repository.ProgramRepo,
+) MentorMenteeUsecase {
 	return &mentorMenteeUsecase{
-		repo: repo,
+		repo:    repo,
+		user:    user,
+		program: program,
 	}
 }
