@@ -67,15 +67,6 @@ func (m *mentoringScheduleUsecase) SaveData(payload *request.MentoringScheduleRe
 	return m.repo.Save(&mentoringSchedule)
 }
 
-func stringInSlice(a string, list []string) bool {
-	for _, b := range list {
-		if b == a {
-			return true
-		}
-	}
-	return false
-}
-
 func (m *mentoringScheduleUsecase) DeleteData(id string) error {
 	return m.repo.Delete(id)
 }
