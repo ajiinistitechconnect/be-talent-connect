@@ -19,7 +19,8 @@ type Server struct {
 func (s *Server) initController() {
 	controller.NewRoleController(s.engine, s.ucManager.RoleUc())
 	controller.NewUserController(s.engine, s.ucManager.UserUc())
-	controller.NewMentoringScheduleController(s.engine, s.ucManager.MentoringScheduleUsecase())
+	controller.NewMentoringScheduleController(s.engine, s.ucManager.MentoringScheduleUc())
+	controller.NewMentorMenteeController(s.engine, s.ucManager.MentorMenteeUc())
 }
 
 func (s *Server) Run() {

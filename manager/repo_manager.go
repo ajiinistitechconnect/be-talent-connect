@@ -6,6 +6,7 @@ type RepoManager interface {
 	RoleRepo() repository.RoleRepo
 	UserRepo() repository.UserRepo
 	MentoringScheduleRepo() repository.MentoringScheduleRepo
+	MentorMenteeRepo() repository.MentorMenteeRepo
 }
 
 type repoManager struct {
@@ -22,6 +23,10 @@ func (r *repoManager) UserRepo() repository.UserRepo {
 
 func (r *repoManager) MentoringScheduleRepo() repository.MentoringScheduleRepo {
 	return repository.NewMentoringScheduleRepo(r.infra.Conn())
+}
+
+func (r *repoManager) MentorMenteeRepo() repository.MentorMenteeRepo {
+	return repository.NewMentorMenteeRepo(r.infra.Conn())
 }
 
 func NewRepoManager(infra InfraManager) RepoManager {

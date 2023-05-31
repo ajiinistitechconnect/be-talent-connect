@@ -37,7 +37,7 @@ func (r *UserController) createHandler(c *gin.Context) {
 		return
 	}
 	if err := json.Unmarshal([]byte(role), &roleUser); err != nil {
-		r.NewFailedResponse(c, http.StatusBadRequest, "Role not valid")
+		r.NewFailedResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
