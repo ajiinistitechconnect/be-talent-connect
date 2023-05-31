@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"errors"
+
 	"github.com/alwinihza/talent-connect-be/delivery/api/request"
 	"github.com/alwinihza/talent-connect-be/model"
 	"github.com/alwinihza/talent-connect-be/repository"
@@ -34,6 +36,17 @@ func (m *mentoringScheduleUsecase) SaveData(payload *request.MentoringScheduleRe
 			return err
 		}
 		mentorMenteeList = append(mentorMenteeList, *mentorMentee)
+	}
+
+	listOfMentorSchedule, err := m.repo.FindByMentorId(mentorMenteeList[0].MentorID)
+	if err != nil {
+		return err
+	}
+
+	for _, mentorSchedule := range listOfMentorSchedule {
+		if mentorSchedule.MentoringDate.Equal(payload.MentoringDate) && payload.ID != mentorSchedule.ID {
+			return errors.New("You already have schedule at this time")
+		}
 	}
 
 	mentoringSchedule := model.MentoringSchedule{

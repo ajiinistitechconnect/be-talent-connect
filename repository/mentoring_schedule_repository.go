@@ -10,6 +10,7 @@ import (
 type MentoringScheduleRepo interface {
 	BaseRepository[model.MentoringSchedule]
 	RemoveAllMentorMentees(mentoringScheduleID string) error
+	FindByMentorId(mentorId string) ([]model.MentoringSchedule, error)
 }
 
 type mentoringScheduleRepo struct {
@@ -22,6 +23,20 @@ func (m *mentoringScheduleRepo) Save(payload *model.MentoringSchedule) error {
 		return err.Error
 	}
 	return nil
+}
+
+func (m *mentoringScheduleRepo) FindByMentorId(mentorId string) ([]model.MentoringSchedule, error) {
+	var mentoringSchedules []model.MentoringSchedule
+	err := m.db.Preload("MentorMentees").
+		Preload("MentorMentees.Mentor").
+		Joins("JOIN mentor_mentee_schedules on mentor_mentee_schedules.mentoring_schedule_id = mentoring_schedules.id").
+		Joins("JOIN mentor_mentees ON mentor_mentees.id = mentor_mentee_schedules.mentor_mentee_id").
+		Where("mentor_mentees.mentor_id = ?", mentorId).
+		Find(&mentoringSchedules).Error
+	if err != nil {
+		return nil, err
+	}
+	return mentoringSchedules, nil
 }
 
 func (m *mentoringScheduleRepo) Get(id string) (*model.MentoringSchedule, error) {
