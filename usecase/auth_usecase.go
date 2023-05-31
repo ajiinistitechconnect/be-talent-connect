@@ -10,7 +10,7 @@ import (
 
 type AuthUsecase interface {
 	Login(payload model.UserCredentials) (*model.User, error)
-	LoginGmail() (model.User, error)
+	LoginGmail() (*model.User, error)
 	ChangePassword(email string, requestData request.ChangePassword) error
 	ForgetPassword() error
 }
@@ -20,7 +20,10 @@ type authUsecase struct {
 }
 
 // LoginGmail implements AuthUsecase
-func (*authUsecase) LoginGmail() (model.User, error) {
+func (*authUsecase) LoginGmail() (*model.User, error) {
+	// make OAuth URL
+	// receive response
+	// verify the email
 	panic("unimplemented")
 }
 
@@ -43,9 +46,13 @@ func (a *authUsecase) ChangePassword(email string, requestData request.ChangePas
 
 // forgetPassword implements AuthUsecase
 func (*authUsecase) ForgetPassword() error {
+	// check if email exists
 	// add key to redis (different DB)
+	// send email
 	panic("unimplemented")
 }
+
+// update password from forgetForm
 
 // verifyLogin implements AuthUsecase
 func (a *authUsecase) Login(payload model.UserCredentials) (*model.User, error) {
