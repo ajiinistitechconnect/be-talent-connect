@@ -18,12 +18,12 @@ type UserController struct {
 
 func (u *UserController) listHandler(c *gin.Context) {
 
-	farmers, err := u.uc.FindAll()
+	users, err := u.uc.FindAll()
 	if err != nil {
 		u.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	u.NewSuccessSingleResponse(c, farmers, "OK")
+	u.NewSuccessSingleResponse(c, users, "OK")
 }
 
 func (r *UserController) createHandler(c *gin.Context) {

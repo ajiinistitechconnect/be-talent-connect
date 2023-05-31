@@ -4,9 +4,7 @@ import "time"
 
 type Activity struct {
 	BaseModel
-	Program
-	ProgramID string
+	ProgramID string `json:"programID" binding:"required"`
 	Name      string
 	StartDate time.Time
-	Duration  time.Duration
 }

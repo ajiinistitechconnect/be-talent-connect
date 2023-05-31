@@ -9,6 +9,8 @@ type UsecaseManager interface {
 	RoleUc() usecase.RoleUsecase
 	MentoringScheduleUc() usecase.MentoringScheduleUsecase
 	MentorMenteeUc() usecase.MentorMenteeUsecase
+	ProgramUc() usecase.ProgramUsecase
+	ActivityUc() usecase.ActivityUsecase
 }
 
 type usecaseManager struct {
@@ -29,6 +31,14 @@ func (u *usecaseManager) MentoringScheduleUc() usecase.MentoringScheduleUsecase 
 
 func (u *usecaseManager) MentorMenteeUc() usecase.MentorMenteeUsecase {
 	return usecase.NewMentorMenteeUsecase(u.repo.MentorMenteeRepo())
+}
+
+func (u *usecaseManager) ProgramUc() usecase.ProgramUsecase {
+	return usecase.NewProgramUsecase(u.repo.ProgramRepo())
+}
+
+func (u *usecaseManager) ActivityUc() usecase.ActivityUsecase {
+	return usecase.NewActivityUsecase(u.repo.ActivityRepo(), u.ProgramUc())
 }
 
 func NewUsecaseManager(repo RepoManager) UsecaseManager {
