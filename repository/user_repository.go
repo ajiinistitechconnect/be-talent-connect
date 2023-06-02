@@ -11,6 +11,7 @@ type UserRepo interface {
 	BaseRepository[model.User]
 	Update(*model.User) error
 	SearchByEmail(email string) (*model.User, error)
+	SearchByRole(role string) ([]model.User, error)
 }
 
 type userRepo struct {
@@ -72,6 +73,18 @@ func (u *userRepo) SearchByEmail(email string) (*model.User, error) {
 		return nil, err
 	}
 	return &user, nil
+}
+
+func (u *userRepo) SearchByRole(role string) ([]model.User, error) {
+	var user []model.User
+	err := u.db.Preload("Roles").
+		Joins("JOIN users_roles ON users_roles.user_id = users.id").
+		Joins("JOIN roles ON users_roles.role_id = roles.id").
+		Find(&user, "roles.name = ?", role).Error
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 func NewUserRepo(db *gorm.DB) UserRepo {

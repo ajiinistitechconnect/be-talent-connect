@@ -17,8 +17,16 @@ type UserController struct {
 }
 
 func (u *UserController) listHandler(c *gin.Context) {
+	searchBy := c.Query("role")
+	var farmers []model.User
+	var err error
 
-	farmers, err := u.uc.FindAll()
+	if searchBy == "" {
+		farmers, err = u.uc.FindAll()
+	} else {
+		farmers, err = u.uc.SearchByRole(searchBy)
+	}
+
 	if err != nil {
 		u.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
 		return
