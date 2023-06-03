@@ -17,7 +17,7 @@ type MentoringScheduleUsecase interface {
 
 type mentoringScheduleUsecase struct {
 	repo         repository.MentoringScheduleRepo
-	mentorMentee repository.MentorMenteeRepo
+	mentorMentee MentorMenteeUsecase
 }
 
 func (m *mentoringScheduleUsecase) FindAll() ([]model.MentoringSchedule, error) {
@@ -31,7 +31,7 @@ func (m *mentoringScheduleUsecase) FindById(id string) (*model.MentoringSchedule
 func (m *mentoringScheduleUsecase) SaveData(payload *request.MentoringScheduleRequest) error {
 	var mentorMenteeList []model.MentorMentee
 	for _, mentorMenteeId := range payload.MentorMentees {
-		mentorMentee, err := m.mentorMentee.Get(mentorMenteeId)
+		mentorMentee, err := m.mentorMentee.FindById(mentorMenteeId)
 		if err != nil {
 			return err
 		}
@@ -73,7 +73,7 @@ func (m *mentoringScheduleUsecase) DeleteData(id string) error {
 
 func NewMentoringScheduleUsecase(
 	repo repository.MentoringScheduleRepo,
-	mentorMentee repository.MentorMenteeRepo,
+	mentorMentee MentorMenteeUsecase,
 ) MentoringScheduleUsecase {
 	return &mentoringScheduleUsecase{
 		repo:         repo,

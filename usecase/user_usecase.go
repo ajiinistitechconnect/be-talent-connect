@@ -1,19 +1,28 @@
 package usecase
 
 import (
+	"fmt"
+	"log"
+
+	"github.com/alwinihza/talent-connect-be/config"
 	"github.com/alwinihza/talent-connect-be/model"
 	"github.com/alwinihza/talent-connect-be/repository"
+	"github.com/alwinihza/talent-connect-be/utils"
+	"gorm.io/gorm"
 )
 
 type UserUsecase interface {
 	BaseUsecase[model.User]
+	SearchEmail(email string) (*model.User, error)
 	UpdateRole(payload *model.User, role []string) error
 	UpdateData(payload *model.User) error
+	SearchByRole(role string) ([]model.User, error)
 }
 
 type userUsecase struct {
 	repo repository.UserRepo
 	role RoleUsecase
+	cfg  *config.Config
 }
 
 func (u *userUsecase) FindAll() ([]model.User, error) {
@@ -24,8 +33,30 @@ func (u *userUsecase) FindById(id string) (*model.User, error) {
 	return u.repo.Get(id)
 }
 
+func (u *userUsecase) SearchEmail(email string) (*model.User, error) {
+	return u.repo.SearchByEmail(email)
+}
+
 func (u *userUsecase) SaveData(payload *model.User) error {
-	return u.repo.Save(payload)
+	_, err := u.SearchEmail(payload.Email)
+	if err != gorm.ErrRecordNotFound {
+		return err
+	}
+	password, err := utils.GeneratePassword()
+	if err != nil {
+		return err
+	}
+	payload.Password, err = utils.SaltPassword([]byte(password))
+	if err != nil {
+		return err
+	}
+	if err := u.repo.Save(payload); err != nil {
+		return err
+	}
+	body := fmt.Sprintf("Hi %s, You are registered to TalentConnect Platform\n\nYour Password is <b>%s</b>", payload.FirstName, password)
+	log.Println(body)
+	// utils.SendMail([]string{payload.Email}, "TalentConnect Registration", body, u.cfg.SMTPConfig)
+	return nil
 }
 
 func (u *userUsecase) UpdateData(payload *model.User) error {
@@ -35,7 +66,7 @@ func (u *userUsecase) UpdateData(payload *model.User) error {
 func (u *userUsecase) UpdateRole(payload *model.User, role []string) error {
 	for _, v := range role {
 		tempRole, err := u.role.FindByName(v)
-		if err != nil && tempRole != nil {
+		if err != nil {
 			return err
 		}
 		payload.Roles = append(payload.Roles, *tempRole)
@@ -47,9 +78,14 @@ func (u *userUsecase) DeleteData(id string) error {
 	return u.repo.Delete(id)
 }
 
-func NewUserUseCase(repo repository.UserRepo, role RoleUsecase) UserUsecase {
+func (u *userUsecase) SearchByRole(role string) ([]model.User, error) {
+	return u.repo.SearchByRole(role)
+}
+
+func NewUserUseCase(repo repository.UserRepo, role RoleUsecase, cfg *config.Config) UserUsecase {
 	return &userUsecase{
 		repo: repo,
 		role: role,
+		cfg:  cfg,
 	}
 }

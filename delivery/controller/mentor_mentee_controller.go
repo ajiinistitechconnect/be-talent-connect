@@ -68,9 +68,9 @@ func NewMentorMenteeController(r *gin.Engine, uc usecase.MentorMenteeUsecase) *M
 		router: r,
 		uc:     uc,
 	}
-	r.GET("/mentor-mentee", controller.listHandler)
-	r.PUT("/mentor-mentee", controller.updateHandler)
-	r.POST("/mentor-mentee", controller.createHandler)
-	r.DELETE("/mentor-mentee/:id", controller.deleteHandler)
+	r.GET("/mentor-mentees", controller.listHandler)
+	r.PUT("/mentor-mentees", controller.updateHandler)
+	r.POST("/mentor-mentees", controller.createHandler)
+	r.DELETE("/mentor-mentees/:id", controller.deleteHandler)
 	return &controller
 }

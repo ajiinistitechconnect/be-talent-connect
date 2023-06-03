@@ -7,13 +7,16 @@ import (
 	"github.com/alwinihza/talent-connect-be/delivery/controller"
 	"github.com/alwinihza/talent-connect-be/manager"
 	"github.com/alwinihza/talent-connect-be/model"
+	"github.com/alwinihza/talent-connect-be/utils/authenticator"
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 )
 
 type Server struct {
-	ucManager manager.UsecaseManager
-	engine    *gin.Engine
-	host      string
+	ucManager    manager.UsecaseManager
+	engine       *gin.Engine
+	host         string
+	tokenService authenticator.AccessToken
 }
 
 func (s *Server) initController() {
@@ -24,6 +27,7 @@ func (s *Server) initController() {
 	controller.NewProgramController(s.engine, s.ucManager.ProgramUc())
 	controller.NewActivityController(s.engine, s.ucManager.ActivityUc())
 	controller.NewParticipantController(s.engine, s.ucManager.ParticipantUc())
+	controller.NewAuthController(s.engine, s.ucManager.AuthUc(), s.tokenService)
 }
 
 func (s *Server) Run() {
@@ -45,8 +49,17 @@ func NewServer() *Server {
 		panic(err)
 	}
 
+	client := redis.NewClient(&redis.Options{
+		Addr:     cfg.Address,
+		Password: cfg.RedisConfig.Password,
+		DB:       cfg.Db,
+		Username: "username",
+	})
+
+	tokenService := authenticator.NewTokenService(*cfg, client)
+
 	repo := manager.NewRepoManager(infra)
-	uc := manager.NewUsecaseManager(repo)
+	uc := manager.NewUsecaseManager(repo, cfg)
 
 	r := gin.Default()
 	r.GET("/migration", func(ctx *gin.Context) {
@@ -62,8 +75,9 @@ func NewServer() *Server {
 	})
 
 	return &Server{
-		ucManager: uc,
-		engine:    r,
-		host:      fmt.Sprintf("%s:%s", cfg.ApiHost, cfg.ApiPort),
+		ucManager:    uc,
+		engine:       r,
+		host:         fmt.Sprintf("%s:%s", cfg.ApiHost, cfg.ApiPort),
+		tokenService: tokenService,
 	}
 }

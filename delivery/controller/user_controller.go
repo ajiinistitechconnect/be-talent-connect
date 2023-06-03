@@ -17,13 +17,21 @@ type UserController struct {
 }
 
 func (u *UserController) listHandler(c *gin.Context) {
+	searchBy := c.Query("role")
+	var farmers []model.User
+	var err error
 
-	users, err := u.uc.FindAll()
+	if searchBy == "" {
+		farmers, err = u.uc.FindAll()
+	} else {
+		farmers, err = u.uc.SearchByRole(searchBy)
+	}
+
 	if err != nil {
 		u.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	u.NewSuccessSingleResponse(c, users, "OK")
+	u.NewSuccessSingleResponse(c, farmers, "OK")
 }
 
 func (r *UserController) createHandler(c *gin.Context) {
@@ -37,7 +45,7 @@ func (r *UserController) createHandler(c *gin.Context) {
 		return
 	}
 	if err := json.Unmarshal([]byte(role), &roleUser); err != nil {
-		r.NewFailedResponse(c, http.StatusBadRequest, err.Error())
+		r.NewFailedResponse(c, http.StatusBadRequest, "Role not valid")
 		return
 	}
 
