@@ -26,6 +26,7 @@ func (s *Server) initController() {
 	controller.NewMentorMenteeController(s.engine, s.ucManager.MentorMenteeUc())
 	controller.NewProgramController(s.engine, s.ucManager.ProgramUc())
 	controller.NewActivityController(s.engine, s.ucManager.ActivityUc())
+	controller.NewParticipantController(s.engine, s.ucManager.ParticipantUc())
 	controller.NewAuthController(s.engine, s.ucManager.AuthUc(), s.tokenService)
 }
 
@@ -69,6 +70,7 @@ func NewServer() *Server {
 			&model.MentoringSchedule{},
 			&model.Program{},
 			&model.Activity{},
+			&model.Participant{},
 		)
 	})
 

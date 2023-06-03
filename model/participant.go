@@ -2,9 +2,9 @@ package model
 
 type Participant struct {
 	BaseModel
-	ProgramID string
-	Program
-	UserID string
-	User
+	ProgramID       string
+	Program         Program
+	UserID          string
+	User            User
 	EvaluationScore float64
 }
