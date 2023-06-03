@@ -9,6 +9,7 @@ type RepoManager interface {
 	MentorMenteeRepo() repository.MentorMenteeRepo
 	ProgramRepo() repository.ProgramRepo
 	ActivityRepo() repository.ActivityRepo
+	ParticipantRepo() repository.ParticipantRepo
 }
 
 type repoManager struct {
@@ -37,6 +38,10 @@ func (r *repoManager) ProgramRepo() repository.ProgramRepo {
 
 func (r *repoManager) ActivityRepo() repository.ActivityRepo {
 	return repository.NewActivityRepo(r.infra.Conn())
+}
+
+func (r *repoManager) ParticipantRepo() repository.ParticipantRepo {
+	return repository.NewParticipantRepo(r.infra.Conn())
 }
 
 func NewRepoManager(infra InfraManager) RepoManager {

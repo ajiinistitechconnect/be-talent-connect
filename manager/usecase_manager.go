@@ -12,6 +12,7 @@ type UsecaseManager interface {
 	MentorMenteeUc() usecase.MentorMenteeUsecase
 	ProgramUc() usecase.ProgramUsecase
 	ActivityUc() usecase.ActivityUsecase
+	ParticipantUc() usecase.ParticipantUsecase
 	AuthUc() usecase.AuthUsecase
 }
 
@@ -42,6 +43,10 @@ func (u *usecaseManager) ProgramUc() usecase.ProgramUsecase {
 
 func (u *usecaseManager) ActivityUc() usecase.ActivityUsecase {
 	return usecase.NewActivityUsecase(u.repo.ActivityRepo(), u.ProgramUc())
+}
+
+func (u *usecaseManager) ParticipantUc() usecase.ParticipantUsecase {
+	return usecase.NewParticipantUsecase(u.repo.ParticipantRepo(), u.UserUc(), u.ProgramUc())
 }
 
 func (u *usecaseManager) AuthUc() usecase.AuthUsecase {
