@@ -22,6 +22,10 @@ type Server struct {
 func (s *Server) initController() {
 	controller.NewRoleController(s.engine, s.ucManager.RoleUc())
 	controller.NewUserController(s.engine, s.ucManager.UserUc())
+	controller.NewMentoringScheduleController(s.engine, s.ucManager.MentoringScheduleUc())
+	controller.NewMentorMenteeController(s.engine, s.ucManager.MentorMenteeUc())
+	controller.NewProgramController(s.engine, s.ucManager.ProgramUc())
+	controller.NewActivityController(s.engine, s.ucManager.ActivityUc())
 	controller.NewAuthController(s.engine, s.ucManager.AuthUc(), s.tokenService)
 }
 
@@ -61,6 +65,10 @@ func NewServer() *Server {
 		infra.Migrate(
 			&model.User{},
 			&model.Role{},
+			&model.MentorMentee{},
+			&model.MentoringSchedule{},
+			&model.Program{},
+			&model.Activity{},
 		)
 	})
 
