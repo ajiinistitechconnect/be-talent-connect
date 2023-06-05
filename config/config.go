@@ -53,7 +53,7 @@ type Config struct {
 }
 
 func (c *Config) ReadConfigFile() error {
-	if os.Getenv("ENV") != "local" {
+	if os.Getenv("ENV") == "local" {
 		err := godotenv.Load(".env")
 		if err != nil {
 			log.Println(err)
