@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"fmt"
+
 	"github.com/alwinihza/talent-connect-be/model"
 	"github.com/alwinihza/talent-connect-be/repository"
 )
@@ -24,19 +26,23 @@ func (m *participantUsecase) FindById(id string) (*model.Participant, error) {
 }
 
 func (m *participantUsecase) SaveData(payload *model.Participant) error {
-	program, err := m.program.FindById(payload.ProgramID)
+	_, err := m.program.FindById(payload.ProgramID)
 	if err != nil {
 		return err
 	}
-	payload.Program = *program
 
 	user, err := m.user.FindById(payload.UserID)
 	if err != nil {
 		return err
 	}
-	payload.User = *user
+	for _, v := range user.Roles {
+		if v.Name == "participant" {
+			payload.User = *user
 
-	return m.repo.Save(payload)
+			return m.repo.Save(payload)
+		}
+	}
+	return fmt.Errorf("Participant assigned is not a valid participant")
 }
 
 func (m *participantUsecase) DeleteData(id string) error {

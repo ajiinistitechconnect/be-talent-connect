@@ -1,12 +1,12 @@
 package repository
 
 type BaseRepository[T any] interface {
-	Save(*T) error
-	Get(string) (*T, error)
+	Save(payload *T) error
+	Get(id string) (*T, error)
 	List() ([]T, error)
-	Delete(string) error
+	Delete(id string) error
 }
 
 type BaseSearch[T any] interface {
-	Search(map[string]any) ([]T, error)
+	Search(by map[string]any) ([]T, error)
 }

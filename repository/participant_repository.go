@@ -10,6 +10,7 @@ import (
 
 type ParticipantRepo interface {
 	BaseRepository[model.Participant]
+	GetByProgram(id string) ([]model.Participant, error)
 }
 
 type participantRepo struct {
@@ -36,6 +37,15 @@ func (m *participantRepo) Get(id string) (*model.Participant, error) {
 func (m *participantRepo) List() ([]model.Participant, error) {
 	var participants []model.Participant
 	err := m.db.Preload(clause.Associations).Find(&participants).Error
+	if err != nil {
+		return nil, err
+	}
+	return participants, nil
+}
+
+func (m *participantRepo) GetByProgram(id string) ([]model.Participant, error) {
+	var participants []model.Participant
+	err := m.db.Preload(clause.Associations).Find(&participants, "program_id = ?", id).Error
 	if err != nil {
 		return nil, err
 	}

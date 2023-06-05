@@ -14,6 +14,10 @@ type UsecaseManager interface {
 	ActivityUc() usecase.ActivityUsecase
 	ParticipantUc() usecase.ParticipantUsecase
 	AuthUc() usecase.AuthUsecase
+	QuestionUc() usecase.QuestionUsecase
+	QuestionCategoryUc() usecase.QuestionCategoryUsecase
+	EvaluationCategoryUc() usecase.EvaluationCategoryUsecase
+	EvaluationUc() usecase.EvaluationUsecase
 }
 
 type usecaseManager struct {
@@ -51,6 +55,22 @@ func (u *usecaseManager) ParticipantUc() usecase.ParticipantUsecase {
 
 func (u *usecaseManager) AuthUc() usecase.AuthUsecase {
 	return usecase.NewAuthUsecase(u.UserUc())
+}
+
+func (u *usecaseManager) QuestionUc() usecase.QuestionUsecase {
+	return usecase.NewQuestionUsecase(u.repo.QuestionRepo())
+}
+
+func (u *usecaseManager) QuestionCategoryUc() usecase.QuestionCategoryUsecase {
+	return usecase.NewQuestionCategoryUsecase(u.repo.QuestionCategoryRepo(), u.QuestionUc())
+}
+
+func (u *usecaseManager) EvaluationUc() usecase.EvaluationUsecase {
+	return usecase.NewEvaluationUsecase(u.repo.EvaluationRepo(), u.UserUc(), u.ParticipantUc())
+}
+
+func (u *usecaseManager) EvaluationCategoryUc() usecase.EvaluationCategoryUsecase {
+	return usecase.NewEvaluationQuestionUsecase(u.repo.EvaluationCategoryRepo(), u.EvaluationUc(), u.ProgramUc(), u.QuestionCategoryUc())
 }
 
 func NewUsecaseManager(repo RepoManager, cfg *config.Config) UsecaseManager {

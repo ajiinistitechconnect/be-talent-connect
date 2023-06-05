@@ -3,7 +3,7 @@ package usecase
 type BaseUsecase[T any] interface {
 	FindAll() ([]T, error)
 	FindById(id string) (*T, error)
-	SaveData(*T) error
+	SaveData(payload *T) error
 	DeleteData(id string) error
 }
 
