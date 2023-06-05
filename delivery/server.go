@@ -7,20 +7,27 @@ import (
 	"github.com/alwinihza/talent-connect-be/delivery/controller"
 	"github.com/alwinihza/talent-connect-be/manager"
 	"github.com/alwinihza/talent-connect-be/model"
+	"github.com/alwinihza/talent-connect-be/utils/authenticator"
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 )
 
 type Server struct {
-	ucManager manager.UsecaseManager
-	engine    *gin.Engine
-	host      string
+	ucManager    manager.UsecaseManager
+	engine       *gin.Engine
+	host         string
+	tokenService authenticator.AccessToken
 }
 
 func (s *Server) initController() {
 	controller.NewRoleController(s.engine, s.ucManager.RoleUc())
 	controller.NewUserController(s.engine, s.ucManager.UserUc())
+	controller.NewMentoringScheduleController(s.engine, s.ucManager.MentoringScheduleUc())
+	controller.NewMentorMenteeController(s.engine, s.ucManager.MentorMenteeUc())
 	controller.NewProgramController(s.engine, s.ucManager.ProgramUc())
 	controller.NewActivityController(s.engine, s.ucManager.ActivityUc())
+	controller.NewParticipantController(s.engine, s.ucManager.ParticipantUc())
+	controller.NewAuthController(s.engine, s.ucManager.AuthUc(), s.tokenService)
 }
 
 func (s *Server) Run() {
@@ -42,22 +49,35 @@ func NewServer() *Server {
 		panic(err)
 	}
 
+	client := redis.NewClient(&redis.Options{
+		Addr:     cfg.Address,
+		Password: cfg.RedisConfig.Password,
+		DB:       cfg.Db,
+		Username: "username",
+	})
+
+	tokenService := authenticator.NewTokenService(*cfg, client)
+
 	repo := manager.NewRepoManager(infra)
-	uc := manager.NewUsecaseManager(repo)
+	uc := manager.NewUsecaseManager(repo, cfg)
 
 	r := gin.Default()
 	r.GET("/migration", func(ctx *gin.Context) {
 		infra.Migrate(
 			&model.User{},
 			&model.Role{},
+			&model.MentorMentee{},
+			&model.MentoringSchedule{},
 			&model.Program{},
 			&model.Activity{},
+			&model.Participant{},
 		)
 	})
 
 	return &Server{
-		ucManager: uc,
-		engine:    r,
-		host:      fmt.Sprintf("%s:%s", cfg.ApiHost, cfg.ApiPort),
+		ucManager:    uc,
+		engine:       r,
+		host:         fmt.Sprintf("%s:%s", cfg.ApiHost, cfg.ApiPort),
+		tokenService: tokenService,
 	}
 }

@@ -8,7 +8,7 @@ import (
 type BaseApi struct{}
 
 func (b *BaseApi) ParseRequestBody(c *gin.Context, payload interface{}) error {
-	if err := c.ShouldBindJSON(payload); err != nil {
+	if err := c.ShouldBind(payload); err != nil {
 		return err
 	}
 	return nil
