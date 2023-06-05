@@ -11,7 +11,8 @@ type ProgramUsecase interface {
 }
 
 type programUsecase struct {
-	repo repository.ProgramRepo
+	repo          repository.ProgramRepo
+	eval_category EvaluationCategoryUsecase
 }
 
 func (p *programUsecase) FindAll() ([]model.Program, error) {

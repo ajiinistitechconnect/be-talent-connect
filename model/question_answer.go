@@ -2,10 +2,9 @@ package model
 
 type QuestionAnswer struct {
 	BaseModel
-	QuestionID string
-	Question
-	AnswerID string
+	QuestionID                   string
+	EvaluationID                 string
+	EvaluationCategoryQuestionID string
+	AnswerID                     string
 	Answer
-	EvaluationQuestionID string
-	EvaluationQuestion
 }

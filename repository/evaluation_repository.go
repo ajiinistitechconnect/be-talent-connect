@@ -7,14 +7,8 @@ import (
 	"gorm.io/gorm"
 )
 
-type TotalWeight struct {
-	id    string
-	total float64
-}
-
 type EvaluationRepo interface {
 	BaseRepository[model.Evaluation]
-	AggregateWeight(id string) (float64, error)
 }
 
 type evaluationRepo struct {
@@ -63,15 +57,6 @@ func (e *evaluationRepo) Save(payload *model.Evaluation) error {
 		return err
 	}
 	return nil
-}
-
-func (e *evaluationRepo) AggregateWeight(id string) (float64, error) {
-	var ret TotalWeight
-	result := e.db.Model(model.Evaluation{}).Preload("EvaluationQuestions").Select("sum(category_weight) as total").Where("id = ?", id).First(&ret)
-	if result.Error != nil {
-		return 0.0, result.Error
-	}
-	return ret.total, nil
 }
 
 func NewEvaluationRepo(db *gorm.DB) EvaluationRepo {

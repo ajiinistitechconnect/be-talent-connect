@@ -4,5 +4,5 @@ type QuestionCategory struct {
 	BaseModel
 	Name        string
 	Description string
-	Questions   []Question `gorm:"foreignKey:category_id"`
+	Questions   []Question `gorm:"many2many:category_template"`
 }

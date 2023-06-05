@@ -7,7 +7,6 @@ import (
 
 type EvaluationUsecase interface {
 	BaseUsecase[model.Evaluation]
-	GetTotalWeight(id string) (float64, error)
 }
 
 type evaluationUsecase struct {
@@ -39,10 +38,6 @@ func (e *evaluationUsecase) SaveData(payload *model.Evaluation) error {
 	payload.Panelist = *panelist
 	// TODO ADD CHECK PARTICIPANT ID
 	return e.repo.Save(payload)
-}
-
-func (e *evaluationUsecase) GetTotalWeight(id string) (float64, error) {
-	return e.repo.AggregateWeight(id)
 }
 
 func NewEvaluationUsecase(repo repository.EvaluationRepo) EvaluationUsecase {

@@ -7,6 +7,11 @@ import (
 	"gorm.io/gorm"
 )
 
+type TotalWeight struct {
+	id    string
+	total float64
+}
+
 type ProgramRepo interface {
 	BaseRepository[model.Program]
 	BaseSearch[model.Program]

@@ -31,10 +31,6 @@ func (q *questionUsecase) FindById(id string) (*model.Question, error) {
 
 // SaveData implements QuestionUsecase
 func (q *questionUsecase) SaveData(payload *model.Question) error {
-	cat, err := q.qc.FindById(payload.CategoryId)
-	if err != nil && cat != nil {
-		return err
-	}
 	return q.repo.Save(payload)
 }
 
