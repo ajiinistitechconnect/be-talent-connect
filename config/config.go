@@ -97,7 +97,7 @@ func (c *Config) ReadConfigFile() error {
 	// c.SMTPEmail == "" || c.SMTPHost == "" || c.SMTPPassword == "" || c.SMTPPort == "" || c.SMTPSenderName == ""
 
 	if c.DbConfig.Host == "" || c.DbConfig.Name == "" || c.DbConfig.Password == "" || c.DbConfig.Port == "" || c.DbConfig.User == "" ||
-		c.ApiConfig.ApiHost == "" || c.ApiConfig.ApiPort == "" {
+		c.ApiConfig.ApiPort == "" {
 		return errors.New("Missing required field")
 	}
 	return nil
