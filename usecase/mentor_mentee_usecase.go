@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"fmt"
+
 	"github.com/alwinihza/talent-connect-be/model"
 	"github.com/alwinihza/talent-connect-be/repository"
 )
@@ -34,11 +36,29 @@ func (m *mentorMenteeUsecase) SaveData(payload *model.MentorMentee) error {
 	if err != nil {
 		return err
 	}
+	var flag bool
+	for _, v := range mentor.Roles {
+		if v.Name == "mentor" {
+			flag = true
+		}
+	}
+	if !flag {
+		return fmt.Errorf("Mentor assigned is not a valid mentor")
+	}
 	payload.Mentor = *mentor
-
+	flag = false
 	mentee, err := m.user.FindById(payload.ParticipantID)
 	if err != nil {
 		return err
+	}
+	for _, v := range mentee.Roles {
+		if v.Name == "participant" {
+			flag = true
+		}
+	}
+
+	if !flag {
+		return fmt.Errorf("Mentee assigned is not a valid mentee")
 	}
 	payload.Participant = *mentee
 

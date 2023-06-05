@@ -66,7 +66,7 @@ func (u *usecaseManager) QuestionCategoryUc() usecase.QuestionCategoryUsecase {
 }
 
 func (u *usecaseManager) EvaluationUc() usecase.EvaluationUsecase {
-	return usecase.NewEvaluationUsecase(u.repo.EvaluationRepo())
+	return usecase.NewEvaluationUsecase(u.repo.EvaluationRepo(), u.UserUc(), u.ParticipantUc())
 }
 
 func (u *usecaseManager) EvaluationCategoryUc() usecase.EvaluationCategoryUsecase {

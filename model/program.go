@@ -9,6 +9,6 @@ type Program struct {
 	Mentors            []MentorMentee               `gorm:"foreignKey:program_id" json:"mentors,omitempty"`
 	Activities         []Activity                   `gorm:"foreignKey:program_id" json:"activities,omitempty"`
 	QuestionCategories []EvaluationCategoryQuestion `gorm:"foreignKey:program_id"`
-	StartDate          time.Time
-	EndDate            time.Time
+	StartDate          time.Time                    `json:"startDate"`
+	EndDate            time.Time                    `json:"endDate"`
 }

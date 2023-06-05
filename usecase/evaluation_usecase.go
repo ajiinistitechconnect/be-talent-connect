@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"fmt"
+
 	"github.com/alwinihza/talent-connect-be/model"
 	"github.com/alwinihza/talent-connect-be/repository"
 )
@@ -13,10 +15,13 @@ type evaluationUsecase struct {
 	repo        repository.EvaluationRepo
 	user        UserUsecase
 	participant ParticipantUsecase
+	// questionAnswer QuestinAnswerUsecase
 }
 
 // DeleteData implements EvaluationUsecase
 func (e *evaluationUsecase) DeleteData(id string) error {
+	// Delete all QuestionAnswer
+
 	return e.repo.Delete(id)
 }
 
@@ -37,16 +42,23 @@ func (e *evaluationUsecase) SaveData(payload *model.Evaluation) error {
 		return err
 	}
 	payload.Panelist = *panelist
-	_, err = e.participant.FindById(payload.ParticipantID)
+	participant, err := e.participant.FindById(payload.ParticipantID)
 	if err != nil {
 		return err
 	}
-	// payload.Participant = *participant
-	return e.repo.Save(payload)
+	for _, v := range panelist.Roles {
+		if v.Name == "panelist" {
+			payload.Participant = *participant
+			return e.repo.Save(payload)
+		}
+	}
+	return fmt.Errorf("Panelist assigned is not a valid panelist")
 }
 
-func NewEvaluationUsecase(repo repository.EvaluationRepo) EvaluationUsecase {
+func NewEvaluationUsecase(repo repository.EvaluationRepo, user UserUsecase, participant ParticipantUsecase) EvaluationUsecase {
 	return &evaluationUsecase{
-		repo: repo,
+		repo:        repo,
+		user:        user,
+		participant: participant,
 	}
 }
