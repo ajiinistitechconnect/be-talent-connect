@@ -86,7 +86,7 @@ func NewServer() *Server {
 	return &Server{
 		ucManager:    uc,
 		engine:       r,
-		host:         fmt.Sprintf("%s:%s", cfg.ApiHost, cfg.ApiPort),
+		host:         fmt.Sprintf("%s%s", cfg.ApiHost, cfg.ApiPort),
 		tokenService: tokenService,
 	}
 }
