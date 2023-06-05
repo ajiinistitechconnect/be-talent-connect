@@ -69,13 +69,13 @@ func (c *Config) ReadConfigFile() error {
 		Password: os.Getenv("DBPASS"),
 	}
 
-	if os.Getenv("PORT") != "" {
-		c.DbConfig.Port = os.Getenv("PORT")
-	}
-
 	c.ApiConfig = ApiConfig{
 		ApiHost: os.Getenv("API_HOST"),
 		ApiPort: os.Getenv("API_PORT"),
+	}
+
+	if os.Getenv("PORT") != "" {
+		c.ApiConfig.ApiPort = os.Getenv("PORT")
 	}
 
 	// c.SMTPConfig = SMTPConfig{
