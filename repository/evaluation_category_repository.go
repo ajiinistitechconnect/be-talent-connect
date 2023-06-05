@@ -13,12 +13,12 @@ type EvaluationCategoryRepo interface {
 	GetQuestions(program_id string) ([]model.EvaluationCategoryQuestion, error)
 }
 
-type evaluationQuestionRepo struct {
+type evaluationCategoryRepo struct {
 	db *gorm.DB
 }
 
 // Delete implements EvaluationQuestionRepo
-func (e *evaluationQuestionRepo) Delete(id string) error {
+func (e *evaluationCategoryRepo) Delete(id string) error {
 	result := e.db.Delete(&model.EvaluationCategoryQuestion{
 		BaseModel: model.BaseModel{
 			ID: id,
@@ -33,7 +33,7 @@ func (e *evaluationQuestionRepo) Delete(id string) error {
 }
 
 // Get implements EvaluationQuestionRepo
-func (e *evaluationQuestionRepo) Get(id string) (*model.EvaluationCategoryQuestion, error) {
+func (e *evaluationCategoryRepo) Get(id string) (*model.EvaluationCategoryQuestion, error) {
 	var payload model.EvaluationCategoryQuestion
 	err := e.db.First(&payload, "id = ?", id).Error
 	if err != nil {
@@ -43,7 +43,7 @@ func (e *evaluationQuestionRepo) Get(id string) (*model.EvaluationCategoryQuesti
 }
 
 // List implements EvaluationQuestionRepo
-func (e *evaluationQuestionRepo) List() ([]model.EvaluationCategoryQuestion, error) {
+func (e *evaluationCategoryRepo) List() ([]model.EvaluationCategoryQuestion, error) {
 	var payloads []model.EvaluationCategoryQuestion
 	err := e.db.Find(&payloads).Error
 	if err != nil {
@@ -53,7 +53,7 @@ func (e *evaluationQuestionRepo) List() ([]model.EvaluationCategoryQuestion, err
 }
 
 // Save implements EvaluationQuestionRepo
-func (e *evaluationQuestionRepo) Save(payload *model.EvaluationCategoryQuestion) error {
+func (e *evaluationCategoryRepo) Save(payload *model.EvaluationCategoryQuestion) error {
 	err := e.db.Save(payload).Error
 	if err != nil {
 		return err
@@ -61,7 +61,7 @@ func (e *evaluationQuestionRepo) Save(payload *model.EvaluationCategoryQuestion)
 	return nil
 }
 
-func (e *evaluationQuestionRepo) AggregateWeight(id string) (float64, error) {
+func (e *evaluationCategoryRepo) AggregateWeight(id string) (float64, error) {
 	var ret TotalWeight
 	result := e.db.Model(model.EvaluationCategoryQuestion{}).Select("sum(category_weight) as total").Where("program_id = ?", id).First(&ret)
 	if result.Error != nil {
@@ -70,7 +70,7 @@ func (e *evaluationQuestionRepo) AggregateWeight(id string) (float64, error) {
 	return ret.total, nil
 }
 
-func (e *evaluationQuestionRepo) GetQuestions(program_id string) ([]model.EvaluationCategoryQuestion, error) {
+func (e *evaluationCategoryRepo) GetQuestions(program_id string) ([]model.EvaluationCategoryQuestion, error) {
 	var ret []model.EvaluationCategoryQuestion
 	err := e.db.Preload("QuestionCategory").Preload("QuestionCategory.Questions").Find(&ret, "program_id = ?", program_id).Error
 	if err != nil {
@@ -79,8 +79,8 @@ func (e *evaluationQuestionRepo) GetQuestions(program_id string) ([]model.Evalua
 	return ret, nil
 }
 
-func NewEvaluationQuestionRepo(db *gorm.DB) EvaluationCategoryRepo {
-	return &evaluationQuestionRepo{
+func NewEvaluationCategoryRepo(db *gorm.DB) EvaluationCategoryRepo {
+	return &evaluationCategoryRepo{
 		db: db,
 	}
 }
