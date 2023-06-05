@@ -10,7 +10,8 @@ type QuestionCategoryUsecase interface {
 }
 
 type questionCategoryUsecase struct {
-	repo repository.QuestionCategoryRepo
+	repo     repository.QuestionCategoryRepo
+	question QuestionUsecase
 }
 
 // DeleteData implements QuestionCategoryUsecase
@@ -30,11 +31,19 @@ func (q *questionCategoryUsecase) FindById(id string) (*model.QuestionCategory, 
 
 // SaveData implements QuestionCategoryUsecase
 func (q *questionCategoryUsecase) SaveData(payload *model.QuestionCategory) error {
+	for i, v := range payload.Questions {
+		question, err := q.question.FindById(v.ID)
+		if err != nil {
+			return err
+		}
+		payload.Questions[i] = *question
+	}
 	return q.repo.Save(payload)
 }
 
-func NewQuestionCategoryUsecase(repo repository.QuestionCategoryRepo) QuestionCategoryUsecase {
+func NewQuestionCategoryUsecase(repo repository.QuestionCategoryRepo, question QuestionUsecase) QuestionCategoryUsecase {
 	return &questionCategoryUsecase{
-		repo: repo,
+		repo:     repo,
+		question: question,
 	}
 }

@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"fmt"
+
 	"github.com/alwinihza/talent-connect-be/model"
 	"github.com/alwinihza/talent-connect-be/repository"
 )
@@ -11,7 +13,6 @@ type QuestionUsecase interface {
 
 type questionUsecase struct {
 	repo repository.QuestionRepo
-	qc   QuestionCategoryUsecase
 }
 
 // DeleteData implements QuestionUsecase
@@ -31,12 +32,17 @@ func (q *questionUsecase) FindById(id string) (*model.Question, error) {
 
 // SaveData implements QuestionUsecase
 func (q *questionUsecase) SaveData(payload *model.Question) error {
-	return q.repo.Save(payload)
+	if payload.Type == "text" || payload.Type == "rating" {
+		if err := q.repo.Save(payload); err != nil {
+			return err
+		}
+		return nil
+	}
+	return fmt.Errorf("Type not acceptable")
 }
 
-func NewQuestionUsecase(repo repository.QuestionRepo, qc QuestionCategoryUsecase) QuestionUsecase {
+func NewQuestionUsecase(repo repository.QuestionRepo) QuestionUsecase {
 	return &questionUsecase{
 		repo: repo,
-		qc:   qc,
 	}
 }

@@ -33,7 +33,7 @@ func (q *questionRepo) Delete(id string) error {
 // Get implements QuestionRepo
 func (q *questionRepo) Get(id string) (*model.Question, error) {
 	var payload model.Question
-	err := q.db.First(&payload, "id = ?", id).Error
+	err := q.db.Preload("Options").First(&payload, "id = ?", id).Error
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +43,7 @@ func (q *questionRepo) Get(id string) (*model.Question, error) {
 // List implements QuestionRepo
 func (q *questionRepo) List() ([]model.Question, error) {
 	var payloads []model.Question
-	err := q.db.Find(&payloads).Error
+	err := q.db.Preload("Options").Find(&payloads).Error
 	if err != nil {
 		return nil, err
 	}

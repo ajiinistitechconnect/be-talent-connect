@@ -24,11 +24,11 @@ func (m *mentorMenteeUsecase) FindById(id string) (*model.MentorMentee, error) {
 }
 
 func (m *mentorMenteeUsecase) SaveData(payload *model.MentorMentee) error {
-	program, err := m.program.FindById(payload.ProgramID)
+	_, err := m.program.FindById(payload.ProgramID)
 	if err != nil {
 		return err
 	}
-	payload.Program = *program
+	// payload.Program = *program
 
 	mentor, err := m.user.FindById(payload.MentorID)
 	if err != nil {

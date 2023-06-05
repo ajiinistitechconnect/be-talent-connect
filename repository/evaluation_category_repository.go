@@ -17,6 +17,11 @@ type evaluationCategoryRepo struct {
 	db *gorm.DB
 }
 
+type TotalWeight struct {
+	Id    string
+	Total float64
+}
+
 // Delete implements EvaluationQuestionRepo
 func (e *evaluationCategoryRepo) Delete(id string) error {
 	result := e.db.Delete(&model.EvaluationCategoryQuestion{
@@ -63,11 +68,11 @@ func (e *evaluationCategoryRepo) Save(payload *model.EvaluationCategoryQuestion)
 
 func (e *evaluationCategoryRepo) AggregateWeight(id string) (float64, error) {
 	var ret TotalWeight
-	result := e.db.Model(model.EvaluationCategoryQuestion{}).Select("sum(category_weight) as total").Where("program_id = ?", id).First(&ret)
+	result := e.db.Model(&model.EvaluationCategoryQuestion{}).Select("program_id as id, sum(category_weight) as total").Where("program_id = ?", id).Group("program_id").Find(&ret)
 	if result.Error != nil {
 		return 0.0, result.Error
 	}
-	return ret.total, nil
+	return ret.Total, nil
 }
 
 func (e *evaluationCategoryRepo) GetQuestions(program_id string) ([]model.EvaluationCategoryQuestion, error) {

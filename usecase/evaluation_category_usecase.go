@@ -15,6 +15,7 @@ type evaluationCategoryUsecase struct {
 	repo       repository.EvaluationCategoryRepo
 	evaluation EvaluationUsecase
 	program    ProgramUsecase
+	category   QuestionCategoryUsecase
 }
 
 // DeleteData implements EvaluationQuestionUsecase
@@ -37,16 +38,38 @@ func (e *evaluationCategoryUsecase) SaveData(payload *model.EvaluationCategoryQu
 	if payload.CategoryWeight < 0 {
 		return fmt.Errorf("Weight cannot less than 0")
 	}
+
+	if _, err := e.program.FindById(payload.ProgramID); err != nil {
+		return err
+	}
+
+	questionCategory, err := e.category.FindById(payload.QuestionCategoryID)
+	if err != nil {
+		return err
+	}
+
+	payload.QuestionCategory = *questionCategory
+
 	if total, err := e.repo.AggregateWeight(payload.ProgramID); err != nil {
 		return err
 	} else if total+payload.CategoryWeight > 100.0 {
 		return fmt.Errorf("Weight total exceed 100")
+	} else {
+		fmt.Println(total)
 	}
 	return e.repo.Save(payload)
 }
 
-func NewEvaluationQuestionUsecase(repo repository.EvaluationCategoryRepo) EvaluationCategoryUsecase {
+func NewEvaluationQuestionUsecase(
+	repo repository.EvaluationCategoryRepo,
+	evaluation EvaluationUsecase,
+	program ProgramUsecase,
+	category QuestionCategoryUsecase,
+) EvaluationCategoryUsecase {
 	return &evaluationCategoryUsecase{
-		repo: repo,
+		repo:       repo,
+		evaluation: evaluation,
+		program:    program,
+		category:   category,
 	}
 }

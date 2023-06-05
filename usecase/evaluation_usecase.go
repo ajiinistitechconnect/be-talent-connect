@@ -10,8 +10,9 @@ type EvaluationUsecase interface {
 }
 
 type evaluationUsecase struct {
-	repo repository.EvaluationRepo
-	user UserUsecase
+	repo        repository.EvaluationRepo
+	user        UserUsecase
+	participant ParticipantUsecase
 }
 
 // DeleteData implements EvaluationUsecase
@@ -36,7 +37,11 @@ func (e *evaluationUsecase) SaveData(payload *model.Evaluation) error {
 		return err
 	}
 	payload.Panelist = *panelist
-	// TODO ADD CHECK PARTICIPANT ID
+	_, err = e.participant.FindById(payload.ParticipantID)
+	if err != nil {
+		return err
+	}
+	// payload.Participant = *participant
 	return e.repo.Save(payload)
 }
 

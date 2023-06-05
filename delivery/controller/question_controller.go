@@ -41,6 +41,7 @@ func (p *QuestionController) createHandler(c *gin.Context) {
 		p.NewFailedResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
+	// p.NewSuccessSingleResponse(c, question, "OK")
 
 	if err := p.uc.SaveData(&question); err != nil {
 		p.NewFailedResponse(c, http.StatusInternalServerError, err.Error())

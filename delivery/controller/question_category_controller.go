@@ -79,10 +79,10 @@ func NewQuestionCategoryController(r *gin.Engine, uc usecase.QuestionCategoryUse
 		router: r,
 		uc:     uc,
 	}
-	r.GET("/category/question", controller.listHandler)
-	r.GET("/category/question/:id", controller.getHandler)
-	r.POST("/category/question", controller.createHandler)
-	r.PUT("/category/question", controller.updateHandler)
-	r.DELETE("/category/question/:id", controller.deleteHandler)
+	r.GET("/category/questions", controller.listHandler)
+	r.GET("/category/questions/:id", controller.getHandler)
+	r.POST("/category/questions", controller.createHandler)
+	r.PUT("/category/questions", controller.updateHandler)
+	r.DELETE("/category/questions/:id", controller.deleteHandler)
 	return &controller
 }
