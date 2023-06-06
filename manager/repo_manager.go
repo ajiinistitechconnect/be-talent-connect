@@ -12,8 +12,10 @@ type RepoManager interface {
 	ParticipantRepo() repository.ParticipantRepo
 	QuestionRepo() repository.QuestionRepo
 	QuestionCategoryRepo() repository.QuestionCategoryRepo
+	QuestionAnswerRepo() repository.QuestionAnswerRepo
 	EvaluationCategoryRepo() repository.EvaluationCategoryRepo
 	EvaluationRepo() repository.EvaluationRepo
+	AnswerRepo() repository.AnswerRepo
 }
 
 type repoManager struct {
@@ -56,12 +58,20 @@ func (r *repoManager) QuestionCategoryRepo() repository.QuestionCategoryRepo {
 	return repository.NewQuestionCategoryRepo(r.infra.Conn())
 }
 
+func (r *repoManager) QuestionAnswerRepo() repository.QuestionAnswerRepo {
+	return repository.NewQuestionAnswerRepo(r.infra.Conn())
+}
+
 func (r *repoManager) EvaluationCategoryRepo() repository.EvaluationCategoryRepo {
 	return repository.NewEvaluationCategoryRepo(r.infra.Conn())
 }
 
 func (r *repoManager) EvaluationRepo() repository.EvaluationRepo {
 	return repository.NewEvaluationRepo(r.infra.Conn())
+}
+
+func (r *repoManager) AnswerRepo() repository.AnswerRepo {
+	return repository.NewAnswerRepo(r.infra.Conn())
 }
 
 func NewRepoManager(infra InfraManager) RepoManager {

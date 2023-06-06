@@ -12,16 +12,22 @@ type EvaluationUsecase interface {
 }
 
 type evaluationUsecase struct {
-	repo        repository.EvaluationRepo
-	user        UserUsecase
-	participant ParticipantUsecase
-	// questionAnswer QuestinAnswerUsecase
+	repo           repository.EvaluationRepo
+	user           UserUsecase
+	participant    ParticipantUsecase
+	questionAnswer QuestionAnswerUsecase
 }
 
 // DeleteData implements EvaluationUsecase
 func (e *evaluationUsecase) DeleteData(id string) error {
 	// Delete all QuestionAnswer
-
+	qa, err := e.questionAnswer.GetByEvaluation(id)
+	if err != nil {
+		return err
+	}
+	for _, q := range qa {
+		e.questionAnswer.DeleteData(q.ID)
+	}
 	return e.repo.Delete(id)
 }
 
@@ -55,10 +61,11 @@ func (e *evaluationUsecase) SaveData(payload *model.Evaluation) error {
 	return fmt.Errorf("Panelist assigned is not a valid panelist")
 }
 
-func NewEvaluationUsecase(repo repository.EvaluationRepo, user UserUsecase, participant ParticipantUsecase) EvaluationUsecase {
+func NewEvaluationUsecase(repo repository.EvaluationRepo, user UserUsecase, participant ParticipantUsecase, qa QuestionAnswerUsecase) EvaluationUsecase {
 	return &evaluationUsecase{
-		repo:        repo,
-		user:        user,
-		participant: participant,
+		repo:           repo,
+		user:           user,
+		participant:    participant,
+		questionAnswer: qa,
 	}
 }

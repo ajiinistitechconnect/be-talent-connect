@@ -2,7 +2,7 @@ package request
 
 type AnswerRequest struct {
 	EvaluationID       string
-	PanelistID         string
+	ProgramID          string
 	QuestionCategories []QuestionCategory
 }
 

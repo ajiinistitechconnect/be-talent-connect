@@ -9,6 +9,7 @@ import (
 
 type EvaluationCategoryUsecase interface {
 	BaseUsecase[model.EvaluationCategoryQuestion]
+	FindByProgramId(id string) ([]model.EvaluationCategoryQuestion, error)
 }
 
 type evaluationCategoryUsecase struct {
@@ -58,6 +59,10 @@ func (e *evaluationCategoryUsecase) SaveData(payload *model.EvaluationCategoryQu
 		fmt.Println(total)
 	}
 	return e.repo.Save(payload)
+}
+
+func (e *evaluationCategoryUsecase) FindByProgramId(id string) ([]model.EvaluationCategoryQuestion, error) {
+	return e.repo.GetByProgramID(id)
 }
 
 func NewEvaluationQuestionUsecase(
