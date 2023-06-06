@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/alwinihza/talent-connect-be/delivery/api"
+	"github.com/alwinihza/talent-connect-be/delivery/api/response"
 	"github.com/alwinihza/talent-connect-be/model"
 	"github.com/alwinihza/talent-connect-be/usecase"
 	"github.com/gin-gonic/gin"
@@ -11,17 +12,54 @@ import (
 
 type ProgramController struct {
 	router *gin.Engine
+	auth   gin.IRoutes
 	uc     usecase.ProgramUsecase
+	user   usecase.UserUsecase
 	api.BaseApi
 }
 
 func (p *ProgramController) listHandler(c *gin.Context) {
-	programs, err := p.uc.FindAll()
+	role, _ := c.Get("Roles")
+	email, _ := c.Get("Email")
+	var programListRes response.ProgramListResponse
+	user, err := p.user.SearchEmail(email.(string))
 	if err != nil {
 		p.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	p.NewSuccessSingleResponse(c, programs, "OK")
+	for _, v := range role.([]string) {
+		switch v {
+		case "admin":
+			programListRes.Admin, err = p.uc.GetByRole(v, user.ID)
+			if err != nil {
+				p.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
+				return
+			}
+		case "panelist":
+			programListRes.Panelist, err = p.uc.GetByRole(v, user.ID)
+			if err != nil {
+				p.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
+				return
+			}
+		case "mentor":
+			programListRes.Mentor, err = p.uc.GetByRole(v, user.ID)
+			if err != nil {
+				p.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
+				return
+			}
+		case "participant":
+			programListRes.Participant, err = p.uc.GetByRole(v, user.ID)
+			if err != nil {
+				p.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
+				return
+			}
+		}
+	}
+	if err != nil {
+		p.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	p.NewSuccessSingleResponse(c, programListRes, "OK")
 }
 
 func (p *ProgramController) getHandler(c *gin.Context) {
@@ -74,12 +112,14 @@ func (p *ProgramController) deleteHandler(c *gin.Context) {
 	c.String(http.StatusNoContent, "")
 }
 
-func NewProgramController(r *gin.Engine, uc usecase.ProgramUsecase) *ProgramController {
+func NewProgramController(r *gin.Engine, auth gin.IRoutes, uc usecase.ProgramUsecase, user usecase.UserUsecase) *ProgramController {
 	controller := ProgramController{
 		router: r,
+		auth:   auth,
 		uc:     uc,
+		user:   user,
 	}
-	r.GET("/programs", controller.listHandler)
+	auth.GET("/programs", controller.listHandler)
 	r.GET("/programs/:id", controller.getHandler)
 	r.POST("/programs", controller.createHandler)
 	r.PUT("/programs", controller.updateHandler)

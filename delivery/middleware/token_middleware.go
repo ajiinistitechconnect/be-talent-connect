@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/alwinihza/talent-connect-be/utils/authenticator"
@@ -22,14 +21,12 @@ type authTokenMiddleware struct {
 
 func (a *authTokenMiddleware) RequireToken() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if ctx.Request.URL.Path == "/enigma/auth" {
-			ctx.Next()
-			return
-		}
-
 		tokenString, err := authenticator.BindAuthHeader(ctx)
 		if err != nil {
-			log.Fatalf(err.Error())
+			ctx.JSON(http.StatusUnauthorized, gin.H{
+				"message": err.Error(),
+			})
+			ctx.Abort()
 			return
 		}
 		accessDetail, err := a.accToken.VerifyAccessToken(tokenString)
@@ -48,6 +45,8 @@ func (a *authTokenMiddleware) RequireToken() gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
+		ctx.Set("Roles", accessDetail.Roles)
+		ctx.Set("Email", accessDetail.Email)
 		ctx.Next()
 	}
 }

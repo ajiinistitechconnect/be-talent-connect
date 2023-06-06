@@ -8,11 +8,25 @@ import (
 type ProgramUsecase interface {
 	BaseUsecase[model.Program]
 	BaseSearchUsecase[model.Program]
+	GetByRole(role string, id string) ([]model.Program, error)
 }
 
 type programUsecase struct {
-	repo          repository.ProgramRepo
-	eval_category EvaluationCategoryUsecase
+	repo repository.ProgramRepo
+}
+
+func (p *programUsecase) GetByRole(role string, id string) ([]model.Program, error) {
+	switch role {
+	case "admin":
+		return p.repo.List()
+	case "panelist":
+		return p.repo.GetByPanelist(id)
+	case "mentor":
+		return p.repo.GetByMentor(id)
+	case "participant":
+		return p.repo.GetByParticipant(id)
+	}
+	return nil, nil
 }
 
 func (p *programUsecase) FindAll() ([]model.Program, error) {
@@ -35,7 +49,9 @@ func (p *programUsecase) SearchBy(by map[string]any) ([]model.Program, error) {
 	return p.repo.Search(by)
 }
 
-func NewProgramUsecase(repo repository.ProgramRepo) ProgramUsecase {
+func NewProgramUsecase(
+	repo repository.ProgramRepo,
+) ProgramUsecase {
 	return &programUsecase{
 		repo: repo,
 	}

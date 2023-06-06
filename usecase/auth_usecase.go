@@ -13,6 +13,7 @@ type AuthUsecase interface {
 	LoginGmail() (*model.User, error)
 	ChangePassword(email string, requestData request.ChangePassword) error
 	ForgetPassword() error
+	GetUserByEmail(email string) (*model.User, error)
 }
 
 type authUsecase struct {
@@ -64,6 +65,10 @@ func (a *authUsecase) Login(payload model.UserCredentials) (*model.User, error) 
 		return nil, fmt.Errorf("Email/Password invalid")
 	}
 	return user, nil
+}
+
+func (a *authUsecase) GetUserByEmail(email string) (*model.User, error) {
+	return a.user.SearchEmail(email)
 }
 
 func NewAuthUsecase(user UserUsecase) AuthUsecase {

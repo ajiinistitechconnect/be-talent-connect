@@ -5,6 +5,7 @@ import (
 
 	"github.com/alwinihza/talent-connect-be/config"
 	"github.com/alwinihza/talent-connect-be/delivery/controller"
+	"github.com/alwinihza/talent-connect-be/delivery/middleware"
 	"github.com/alwinihza/talent-connect-be/manager"
 	"github.com/alwinihza/talent-connect-be/model"
 	"github.com/alwinihza/talent-connect-be/utils/authenticator"
@@ -15,6 +16,7 @@ import (
 type Server struct {
 	ucManager    manager.UsecaseManager
 	engine       *gin.Engine
+	authRoute    gin.IRoutes
 	host         string
 	tokenService authenticator.AccessToken
 }
@@ -24,7 +26,7 @@ func (s *Server) initController() {
 	controller.NewUserController(s.engine, s.ucManager.UserUc())
 	controller.NewMentoringScheduleController(s.engine, s.ucManager.MentoringScheduleUc())
 	controller.NewMentorMenteeController(s.engine, s.ucManager.MentorMenteeUc())
-	controller.NewProgramController(s.engine, s.ucManager.ProgramUc())
+	controller.NewProgramController(s.engine, s.authRoute, s.ucManager.ProgramUc(), s.ucManager.UserUc())
 	controller.NewActivityController(s.engine, s.ucManager.ActivityUc())
 	controller.NewParticipantController(s.engine, s.ucManager.ParticipantUc())
 	controller.NewQuestionController(s.engine, s.ucManager.QuestionUc())
@@ -57,7 +59,7 @@ func NewServer() *Server {
 		Addr:     cfg.Address,
 		Password: cfg.RedisConfig.Password,
 		DB:       cfg.Db,
-		Username: "username",
+		// Username: "username",
 	})
 
 	tokenService := authenticator.NewTokenService(*cfg, client)
@@ -83,9 +85,12 @@ func NewServer() *Server {
 		)
 	})
 
+	auth := r.Group("/auth").Use(middleware.NewTokenValidator(tokenService).RequireToken())
+
 	return &Server{
 		ucManager:    uc,
 		engine:       r,
+		authRoute:    auth,
 		host:         fmt.Sprintf("%s:%s", cfg.ApiHost, cfg.ApiPort),
 		tokenService: tokenService,
 	}

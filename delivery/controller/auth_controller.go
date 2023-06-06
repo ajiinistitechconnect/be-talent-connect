@@ -1,10 +1,12 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/alwinihza/talent-connect-be/delivery/api"
 	"github.com/alwinihza/talent-connect-be/delivery/api/request"
+	"github.com/alwinihza/talent-connect-be/delivery/api/response"
 	"github.com/alwinihza/talent-connect-be/delivery/middleware"
 	"github.com/alwinihza/talent-connect-be/model"
 	"github.com/alwinihza/talent-connect-be/usecase"
@@ -30,6 +32,7 @@ func (a *AuthController) login(c *gin.Context) {
 	user, err := a.uc.Login(payload)
 	if err != nil {
 		a.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
+		return
 	}
 	for _, v := range user.Roles {
 		roles = append(roles, v.Name)
@@ -37,6 +40,7 @@ func (a *AuthController) login(c *gin.Context) {
 	cred := model.TokenModel{
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
+		Email:     user.Email,
 		Role:      roles,
 	}
 	tokenDetail, err := a.tokenService.CreateAccessToken(&cred)
@@ -49,7 +53,31 @@ func (a *AuthController) login(c *gin.Context) {
 		return
 	}
 	// redis add token
-	a.NewSuccessSingleResponse(c, tokenDetail.AccessToken, "OK")
+	response := response.LoginResponse{
+		AccessToken: tokenDetail.AccessToken,
+		TokenModel:  cred,
+	}
+	a.NewSuccessSingleResponse(c, response, "OK")
+}
+
+func (a *AuthController) getRoles(c *gin.Context) {
+	var roles []string
+
+	token, err := authenticator.BindAuthHeader(c)
+	if err != nil {
+		c.AbortWithStatus(401)
+	}
+
+	accountDetail, err := a.tokenService.VerifyAccessToken(token)
+	user, err := a.uc.GetUserByEmail(accountDetail.Email)
+	if err != nil {
+		c.AbortWithStatus(401)
+	}
+	for _, v := range user.Roles {
+		roles = append(roles, v.Name)
+	}
+	fmt.Println(roles)
+	a.NewSuccessSingleResponse(c, roles, "OK")
 }
 
 func (a *AuthController) logout(c *gin.Context) {
@@ -118,5 +146,6 @@ func NewAuthController(r *gin.Engine, uc usecase.AuthUsecase, tokenService authe
 	r.POST("/forget-password", controller.forgetPassword)
 	auth.POST("/change-password", controller.changePassword)
 	auth.POST("/logout", controller.logout)
+	auth.GET("/roles", controller.getRoles)
 	return &controller
 }

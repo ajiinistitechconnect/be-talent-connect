@@ -10,10 +10,50 @@ import (
 type ProgramRepo interface {
 	BaseRepository[model.Program]
 	BaseSearch[model.Program]
+	GetByPanelist(panelist_id string) ([]model.Program, error)
+	GetByParticipant(participant_id string) ([]model.Program, error)
+	GetByMentor(mentor_id string) ([]model.Program, error)
 }
 
 type programRepo struct {
 	db *gorm.DB
+}
+
+func (p *programRepo) GetByPanelist(panelist_id string) ([]model.Program, error) {
+	var programs []model.Program
+	err := p.db.
+		Joins("JOIN participants ON participants.program_id = programs.id").
+		Joins("JOIN evaluations ON evaluations.participant_id = participants.id").
+		Group("programs.id").
+		Find(&programs, "evaluations.panelist_id = ?", panelist_id).Error
+	if err != nil {
+		return nil, err
+	}
+	return programs, nil
+}
+
+func (p *programRepo) GetByParticipant(participant_id string) ([]model.Program, error) {
+	var programs []model.Program
+	err := p.db.
+		Joins("JOIN participants ON participants.program_id = programs.id").
+		Group("programs.id").
+		Find(&programs, "participants.user_id = ?", participant_id).Error
+	if err != nil {
+		return nil, err
+	}
+	return programs, nil
+}
+
+func (p *programRepo) GetByMentor(mentor_id string) ([]model.Program, error) {
+	var programs []model.Program
+	err := p.db.
+		Joins("JOIN mentor_mentees ON mentor_mentees.program_id = programs.id").
+		Group("programs.id").
+		Find(&programs, "mentor_mentees.mentor_id = ?", mentor_id).Error
+	if err != nil {
+		return nil, err
+	}
+	return programs, nil
 }
 
 func (p *programRepo) Save(payload *model.Program) error {

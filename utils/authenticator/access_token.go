@@ -75,9 +75,16 @@ func (t *accessToken) VerifyAccessToken(tokenString string) (AccessDetail, error
 	}
 	email := claims["Email"].(string)
 	uuid := claims["AccessUUID"].(string)
+	role := claims["Role"].([]interface{})
+	s := make([]string, len(role))
+	for i, v := range role {
+		s[i] = fmt.Sprint(v)
+	}
+	fmt.Println("role", role)
 	return AccessDetail{
 		AccessUUID: uuid,
 		Email:      email,
+		Roles:      s,
 	}, nil
 }
 
@@ -91,9 +98,9 @@ func (a *accessToken) DeleteAccessToken(accessUUID string) error {
 	return nil
 }
 
-func (a *accessToken) StoreAccessToken(username string, tokenDetail TokenDetail) error {
+func (a *accessToken) StoreAccessToken(email string, tokenDetail TokenDetail) error {
 	at := time.Unix(tokenDetail.AtExpired, 0)
-	err := a.client.Set(context.Background(), tokenDetail.AccessUUID, username, at.Sub(time.Now())).Err()
+	err := a.client.Set(context.Background(), tokenDetail.AccessUUID, email, at.Sub(time.Now())).Err()
 	if err != nil {
 		return err
 	}

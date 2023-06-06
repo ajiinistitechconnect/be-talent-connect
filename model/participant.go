@@ -6,4 +6,5 @@ type Participant struct {
 	UserID          string
 	User            User
 	EvaluationScore float64
+	Evaluations     []Evaluation
 }
