@@ -5,6 +5,7 @@ import (
 
 	"github.com/alwinihza/talent-connect-be/model"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type QuestionCategoryRepo interface {
@@ -33,7 +34,7 @@ func (q *questionCategoryRepo) Delete(id string) error {
 // Get implements QuestionCategoryRepo
 func (q *questionCategoryRepo) Get(id string) (*model.QuestionCategory, error) {
 	var payload model.QuestionCategory
-	err := q.db.First(&payload, "id = ?", id).Error
+	err := q.db.Preload(clause.Associations).First(&payload, "id = ?", id).Error
 	if err != nil {
 		return nil, err
 	}

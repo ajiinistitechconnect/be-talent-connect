@@ -34,6 +34,7 @@ func (s *Server) initController() {
 	controller.NewEvaluationCategoryController(s.engine, s.ucManager.EvaluationCategoryUc())
 	controller.NewAuthController(s.engine, s.ucManager.AuthUc(), s.tokenService)
 	controller.NewEvaluationController(s.engine, s.ucManager.EvaluationUc())
+	controller.NewQuestionAnswerController(s.engine, s.ucManager.QuestionAnswerUc())
 }
 
 func (s *Server) Run() {
@@ -72,11 +73,13 @@ func NewServer() *Server {
 		infra.Migrate(
 			&model.User{},
 			&model.Role{},
+			&model.Answer{},
 			&model.Question{},
 			&model.Option{},
+			&model.QuestionAnswer{},
 			&model.QuestionCategory{},
-			&model.Program{},
 			&model.EvaluationCategoryQuestion{},
+			&model.Program{},
 			&model.Evaluation{},
 			&model.MentorMentee{},
 			&model.MentoringSchedule{},

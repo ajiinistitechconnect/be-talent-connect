@@ -9,6 +9,7 @@ type ProgramUsecase interface {
 	BaseUsecase[model.Program]
 	BaseSearchUsecase[model.Program]
 	GetByRole(role string, id string) ([]model.Program, error)
+	ListQuestions(id string) (*model.Program, error)
 }
 
 type programUsecase struct {
@@ -49,9 +50,11 @@ func (p *programUsecase) SearchBy(by map[string]any) ([]model.Program, error) {
 	return p.repo.Search(by)
 }
 
-func NewProgramUsecase(
-	repo repository.ProgramRepo,
-) ProgramUsecase {
+func (p *programUsecase) ListQuestions(id string) (*model.Program, error) {
+	return p.repo.GetQuestions(id)
+}
+
+func NewProgramUsecase(repo repository.ProgramRepo) ProgramUsecase {
 	return &programUsecase{
 		repo: repo,
 	}

@@ -72,6 +72,16 @@ func (p *ProgramController) getHandler(c *gin.Context) {
 	p.NewSuccessSingleResponse(c, payload, "OK")
 }
 
+func (p *ProgramController) getQuestionHandler(c *gin.Context) {
+	id := c.Param("id")
+	payload, err := p.uc.ListQuestions(id)
+	if err != nil {
+		p.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	p.NewSuccessSingleResponse(c, payload.EvaluationCategories, "OK")
+}
+
 func (p *ProgramController) createHandler(c *gin.Context) {
 	var program model.Program
 
@@ -120,6 +130,7 @@ func NewProgramController(r *gin.Engine, auth gin.IRoutes, uc usecase.ProgramUse
 		user:   user,
 	}
 	auth.GET("/programs", controller.listHandler)
+	r.GET("/programs/questions/:id", controller.getQuestionHandler)
 	r.GET("/programs/:id", controller.getHandler)
 	r.POST("/programs", controller.createHandler)
 	r.PUT("/programs", controller.updateHandler)

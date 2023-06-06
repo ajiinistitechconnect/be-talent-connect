@@ -5,6 +5,7 @@ import (
 
 	"github.com/alwinihza/talent-connect-be/model"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type ProgramRepo interface {
@@ -13,6 +14,7 @@ type ProgramRepo interface {
 	GetByPanelist(panelist_id string) ([]model.Program, error)
 	GetByParticipant(participant_id string) ([]model.Program, error)
 	GetByMentor(mentor_id string) ([]model.Program, error)
+	GetQuestions(id string) (*model.Program, error)
 }
 
 type programRepo struct {
@@ -67,6 +69,19 @@ func (p *programRepo) Save(payload *model.Program) error {
 func (p *programRepo) Get(id string) (*model.Program, error) {
 	var payload model.Program
 	err := p.db.First(&payload, "id = ?", id).Error
+	if err != nil {
+		return nil, err
+	}
+	return &payload, nil
+}
+
+func (p *programRepo) GetQuestions(id string) (*model.Program, error) {
+	var payload model.Program
+	err := p.db.Preload(clause.Associations).
+		Preload("EvaluationCategories.QuestionCategory").
+		Preload("EvaluationCategories.QuestionCategory.Questions").
+		Preload("EvaluationCategories.QuestionCategory.Questions.Options").
+		First(&payload, "id = ?", id).Error
 	if err != nil {
 		return nil, err
 	}
