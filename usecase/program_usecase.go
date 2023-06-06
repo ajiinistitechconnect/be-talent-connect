@@ -8,6 +8,7 @@ import (
 type ProgramUsecase interface {
 	BaseUsecase[model.Program]
 	BaseSearchUsecase[model.Program]
+	ListQuestions(id string) (*model.Program, error)
 }
 
 type programUsecase struct {
@@ -33,6 +34,10 @@ func (p *programUsecase) DeleteData(id string) error {
 
 func (p *programUsecase) SearchBy(by map[string]any) ([]model.Program, error) {
 	return p.repo.Search(by)
+}
+
+func (p *programUsecase) ListQuestions(id string) (*model.Program, error) {
+	return p.repo.GetQuestions(id)
 }
 
 func NewProgramUsecase(repo repository.ProgramRepo) ProgramUsecase {

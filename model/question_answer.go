@@ -6,5 +6,5 @@ type QuestionAnswer struct {
 	EvaluationID                 string
 	EvaluationCategoryQuestionID string
 	AnswerID                     string
-	Answer
+	Answer                       Answer
 }

@@ -5,6 +5,7 @@ import (
 
 	"github.com/alwinihza/talent-connect-be/model"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type EvaluationRepo interface {
@@ -33,7 +34,7 @@ func (e *evaluationRepo) Delete(id string) error {
 // Get implements EvaluationRepo
 func (e *evaluationRepo) Get(id string) (*model.Evaluation, error) {
 	var payload model.Evaluation
-	err := e.db.First(&payload, "id = ?", id).Error
+	err := e.db.Preload(clause.Associations).First(&payload, "id = ?", id).Error
 	if err != nil {
 		return nil, err
 	}

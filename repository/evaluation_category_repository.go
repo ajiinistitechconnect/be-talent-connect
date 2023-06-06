@@ -5,12 +5,14 @@ import (
 
 	"github.com/alwinihza/talent-connect-be/model"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type EvaluationCategoryRepo interface {
 	BaseRepository[model.EvaluationCategoryQuestion]
 	AggregateWeight(id string) (float64, error)
 	GetQuestions(program_id string) ([]model.EvaluationCategoryQuestion, error)
+	GetByProgramID(id string) ([]model.EvaluationCategoryQuestion, error)
 }
 
 type evaluationCategoryRepo struct {
@@ -40,11 +42,20 @@ func (e *evaluationCategoryRepo) Delete(id string) error {
 // Get implements EvaluationQuestionRepo
 func (e *evaluationCategoryRepo) Get(id string) (*model.EvaluationCategoryQuestion, error) {
 	var payload model.EvaluationCategoryQuestion
-	err := e.db.First(&payload, "id = ?", id).Error
+	err := e.db.Preload(clause.Associations).Preload("QuestionCategory.Questions").First(&payload, "id = ?", id).Error
 	if err != nil {
 		return nil, err
 	}
 	return &payload, nil
+}
+
+func (e *evaluationCategoryRepo) GetByProgramID(id string) ([]model.EvaluationCategoryQuestion, error) {
+	var payload []model.EvaluationCategoryQuestion
+	err := e.db.Preload(clause.Associations).Preload("QuestionCategory.Questions").Find(&payload, "program_id = ?", id).Error
+	if err != nil {
+		return nil, err
+	}
+	return payload, nil
 }
 
 // List implements EvaluationQuestionRepo

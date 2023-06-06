@@ -16,6 +16,8 @@ type UsecaseManager interface {
 	AuthUc() usecase.AuthUsecase
 	QuestionUc() usecase.QuestionUsecase
 	QuestionCategoryUc() usecase.QuestionCategoryUsecase
+	QuestionAnswerUc() usecase.QuestionAnswerUsecase
+	AnswerUc() usecase.AnswerUsecase
 	EvaluationCategoryUc() usecase.EvaluationCategoryUsecase
 	EvaluationUc() usecase.EvaluationUsecase
 }
@@ -66,11 +68,19 @@ func (u *usecaseManager) QuestionCategoryUc() usecase.QuestionCategoryUsecase {
 }
 
 func (u *usecaseManager) EvaluationUc() usecase.EvaluationUsecase {
-	return usecase.NewEvaluationUsecase(u.repo.EvaluationRepo(), u.UserUc(), u.ParticipantUc())
+	return usecase.NewEvaluationUsecase(u.repo.EvaluationRepo(), u.UserUc(), u.ParticipantUc(), u.QuestionAnswerUc())
 }
 
 func (u *usecaseManager) EvaluationCategoryUc() usecase.EvaluationCategoryUsecase {
 	return usecase.NewEvaluationQuestionUsecase(u.repo.EvaluationCategoryRepo(), u.EvaluationUc(), u.ProgramUc(), u.QuestionCategoryUc())
+}
+
+func (u *usecaseManager) AnswerUc() usecase.AnswerUsecase {
+	return usecase.NewAnswerUsecase(u.repo.AnswerRepo())
+}
+
+func (u *usecaseManager) QuestionAnswerUc() usecase.QuestionAnswerUsecase {
+	return usecase.NewQuestionAnswerUsecase(u.repo.QuestionAnswerRepo(), u.AnswerUc(), u.repo.EvaluationRepo(), u.repo.EvaluationCategoryRepo(), u.ProgramUc(), u.QuestionUc())
 }
 
 func NewUsecaseManager(repo RepoManager, cfg *config.Config) UsecaseManager {
