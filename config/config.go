@@ -94,8 +94,8 @@ func (c *Config) ReadConfigFile() error {
 	}
 
 	c.RedisConfig = RedisConfig{
-		Address:  "localhost:6379",
-		Password: "",
+		Address:  os.Getenv("REDIS_HOST"),
+		Password: os.Getenv("REDIS_PASSWORD"),
 		Db:       0,
 	}
 	// c.SMTPEmail == "" || c.SMTPHost == "" || c.SMTPPassword == "" || c.SMTPPort == "" || c.SMTPSenderName == ""
