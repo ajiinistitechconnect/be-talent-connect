@@ -2,9 +2,9 @@ package model
 
 type User struct {
 	BaseModel
-	CreatedBy string `gorm:"default:admin"`
-	UpdatedBy string `gorm:"default:admin"`
-	Email     string `gorm:"unique"`
+	CreatedBy string `gorm:"default:admin" json:"-"`
+	UpdatedBy string `gorm:"default:admin" json:"-"`
+	Email     string `gorm:"unique" json:"-"`
 	Password  string `json:"-"`
 	IsActive  bool   `gorm:"default:false"`
 	FirstName string

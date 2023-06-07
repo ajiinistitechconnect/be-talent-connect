@@ -10,10 +10,23 @@ import (
 
 type EvaluationRepo interface {
 	BaseRepository[model.Evaluation]
+	FilterByProgramUser(program_id string, user_id string, stage string) ([]model.Evaluation, error)
 }
 
 type evaluationRepo struct {
 	db *gorm.DB
+}
+
+func (e *evaluationRepo) FilterByProgramUser(program_id string, user_id string, stage string) ([]model.Evaluation, error) {
+	var payload []model.Evaluation
+	err := e.db.Preload("Participant").Preload("Participant.User").Joins("JOIN participants ON participants.id=evaluations.participant_id").
+		// Joins("JOIN users on users.id=participants.id").
+		Where("evaluations.panelist_id = ? AND participants.program_id = ? AND evaluations.stage = ?", user_id, program_id, stage).
+		Find(&payload).Error
+	if err != nil {
+		return nil, err
+	}
+	return payload, nil
 }
 
 // Delete implements EvaluationRepo

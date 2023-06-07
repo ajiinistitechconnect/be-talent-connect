@@ -33,7 +33,7 @@ func (s *Server) initController() {
 	controller.NewQuestionCategoryController(s.engine, s.ucManager.QuestionCategoryUc())
 	controller.NewEvaluationCategoryController(s.engine, s.ucManager.EvaluationCategoryUc())
 	controller.NewAuthController(s.engine, s.ucManager.AuthUc(), s.tokenService)
-	controller.NewEvaluationController(s.engine, s.ucManager.EvaluationUc())
+	controller.NewEvaluationController(s.engine, s.authRoute, s.ucManager.EvaluationUc(), s.ucManager.UserUc())
 	controller.NewQuestionAnswerController(s.engine, s.ucManager.QuestionAnswerUc())
 }
 

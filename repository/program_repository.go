@@ -68,7 +68,7 @@ func (p *programRepo) Save(payload *model.Program) error {
 
 func (p *programRepo) Get(id string) (*model.Program, error) {
 	var payload model.Program
-	err := p.db.First(&payload, "id = ?", id).Error
+	err := p.db.Preload("Participants").Preload("Participants.User").Preload("Activities").First(&payload, "id = ?", id).Error
 	if err != nil {
 		return nil, err
 	}
