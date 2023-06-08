@@ -69,7 +69,26 @@ func (p *ProgramController) getHandler(c *gin.Context) {
 		p.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	p.NewSuccessSingleResponse(c, payload, "OK")
+
+	activities := make(map[string][]model.Activity)
+	for _, v := range payload.Activities {
+		date := v.StartDate.Local().Format("2 January 2006")
+		activities[date] = append(activities[date], v)
+	}
+	var activityList []response.Activity
+	for i, v := range activities {
+		activity := response.Activity{
+			Date:       i,
+			Activities: v,
+		}
+		activityList = append(activityList, activity)
+	}
+	payload.Activities = []model.Activity{}
+	res := response.ProgramResponse{
+		Program:  *payload,
+		Activity: activityList,
+	}
+	p.NewSuccessSingleResponse(c, res, "OK")
 }
 
 func (p *ProgramController) getQuestionHandler(c *gin.Context) {

@@ -90,7 +90,7 @@ func (c *Config) ReadConfigFile() error {
 		ApplicationName:     "TALENTCONNECT",
 		JwtSignatureKey:     "x/A?D(G+KaPdSgVkYp3s6v9y$B&E)H@M",
 		JwtSigningMethod:    jwt.SigningMethodHS256,
-		AccessTokenLifeTime: time.Hour * 1,
+		AccessTokenLifeTime: time.Minute * 5,
 	}
 
 	c.RedisConfig = RedisConfig{
