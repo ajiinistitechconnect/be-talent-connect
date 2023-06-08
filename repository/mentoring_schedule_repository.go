@@ -11,6 +11,7 @@ type MentoringScheduleRepo interface {
 	BaseRepository[model.MentoringSchedule]
 	RemoveAllMentorMentees(mentoringScheduleID string) error
 	FindByMentorId(mentorId string) ([]model.MentoringSchedule, error)
+	FindByMenteeId(mentorId string) ([]model.MentoringSchedule, error)
 }
 
 type mentoringScheduleRepo struct {
@@ -29,9 +30,25 @@ func (m *mentoringScheduleRepo) FindByMentorId(mentorId string) ([]model.Mentori
 	var mentoringSchedules []model.MentoringSchedule
 	err := m.db.Preload("MentorMentees").
 		Preload("MentorMentees.Mentor").
+		Preload("MentorMentees.Participant").
 		Joins("JOIN mentor_mentee_schedules on mentor_mentee_schedules.mentoring_schedule_id = mentoring_schedules.id").
 		Joins("JOIN mentor_mentees ON mentor_mentees.id = mentor_mentee_schedules.mentor_mentee_id").
 		Where("mentor_mentees.mentor_id = ?", mentorId).
+		Find(&mentoringSchedules).Error
+	if err != nil {
+		return nil, err
+	}
+	return mentoringSchedules, nil
+}
+
+func (m *mentoringScheduleRepo) FindByMenteeId(menteeId string) ([]model.MentoringSchedule, error) {
+	var mentoringSchedules []model.MentoringSchedule
+	err := m.db.Preload("MentorMentees").
+		Preload("MentorMentees.Mentor").
+		Preload("MentorMentees.Participant").
+		Joins("JOIN mentor_mentee_schedules on mentor_mentee_schedules.mentoring_schedule_id = mentoring_schedules.id").
+		Joins("JOIN mentor_mentees ON mentor_mentees.id = mentor_mentee_schedules.mentor_mentee_id").
+		Where("mentor_mentees.participant_id = ?", menteeId).
 		Find(&mentoringSchedules).Error
 	if err != nil {
 		return nil, err
@@ -44,7 +61,6 @@ func (m *mentoringScheduleRepo) Get(id string) (*model.MentoringSchedule, error)
 	err := m.db.Preload("MentorMentees").
 		Preload("MentorMentees.Mentor").
 		Preload("MentorMentees.Participant").
-		Preload("MentorMentees.Program").
 		First(&mentoringSchedule, "id = ?", id).Error
 	if err != nil {
 		return nil, err
@@ -57,7 +73,6 @@ func (m *mentoringScheduleRepo) List() ([]model.MentoringSchedule, error) {
 	err := m.db.Preload("MentorMentees").
 		Preload("MentorMentees.Mentor").
 		Preload("MentorMentees.Participant").
-		Preload("MentorMentees.Program").
 		Find(&mentoringSchedules).Error
 	if err != nil {
 		return nil, err

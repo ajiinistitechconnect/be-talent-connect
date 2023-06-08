@@ -13,6 +13,8 @@ type MentoringScheduleUsecase interface {
 	FindById(id string) (*model.MentoringSchedule, error)
 	SaveData(*request.MentoringScheduleRequest) error
 	DeleteData(id string) error
+	FindScheduleByMentorId(id string) ([]model.MentoringSchedule, error)
+	FindScheduleByMenteeId(id string) ([]model.MentoringSchedule, error)
 }
 
 type mentoringScheduleUsecase struct {
@@ -26,6 +28,14 @@ func (m *mentoringScheduleUsecase) FindAll() ([]model.MentoringSchedule, error) 
 
 func (m *mentoringScheduleUsecase) FindById(id string) (*model.MentoringSchedule, error) {
 	return m.repo.Get(id)
+}
+
+func (m *mentoringScheduleUsecase) FindScheduleByMentorId(id string) ([]model.MentoringSchedule, error) {
+	return m.repo.FindByMentorId(id)
+}
+
+func (m *mentoringScheduleUsecase) FindScheduleByMenteeId(id string) ([]model.MentoringSchedule, error) {
+	return m.repo.FindByMenteeId(id)
 }
 
 func (m *mentoringScheduleUsecase) SaveData(payload *request.MentoringScheduleRequest) error {
@@ -44,7 +54,7 @@ func (m *mentoringScheduleUsecase) SaveData(payload *request.MentoringScheduleRe
 	}
 
 	for _, mentorSchedule := range listOfMentorSchedule {
-		if mentorSchedule.MentoringDate.Equal(payload.MentoringDate) && payload.ID != mentorSchedule.ID {
+		if mentorSchedule.StartDate.Equal(payload.StartDate) && payload.ID != mentorSchedule.ID {
 			return errors.New("You already have schedule at this time")
 		}
 	}
@@ -52,7 +62,11 @@ func (m *mentoringScheduleUsecase) SaveData(payload *request.MentoringScheduleRe
 	mentoringSchedule := model.MentoringSchedule{
 		BaseModel:     model.BaseModel{},
 		MentorMentees: mentorMenteeList,
-		MentoringDate: payload.MentoringDate,
+		Name:          payload.Name,
+		Link:          payload.Link,
+		Description:   payload.Description,
+		StartDate:     payload.StartDate,
+		EndDate:       payload.EndDate,
 	}
 
 	if payload.ID != "" {

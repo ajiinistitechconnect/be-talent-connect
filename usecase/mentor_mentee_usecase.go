@@ -9,6 +9,7 @@ import (
 
 type MentorMenteeUsecase interface {
 	BaseUsecase[model.MentorMentee]
+	FindByMentorId(id string) ([]model.MentorMentee, error)
 }
 
 type mentorMenteeUsecase struct {
@@ -23,6 +24,10 @@ func (m *mentorMenteeUsecase) FindAll() ([]model.MentorMentee, error) {
 
 func (m *mentorMenteeUsecase) FindById(id string) (*model.MentorMentee, error) {
 	return m.repo.Get(id)
+}
+
+func (m *mentorMenteeUsecase) FindByMentorId(id string) ([]model.MentorMentee, error) {
+	return m.repo.GetMentee(id)
 }
 
 func (m *mentorMenteeUsecase) SaveData(payload *model.MentorMentee) error {

@@ -10,6 +10,7 @@ import (
 
 type MentorMenteeRepo interface {
 	BaseRepository[model.MentorMentee]
+	GetMentee(mentorID string) ([]model.MentorMentee, error)
 }
 
 type mentorMenteeRepo struct {
@@ -31,6 +32,14 @@ func (m *mentorMenteeRepo) Get(id string) (*model.MentorMentee, error) {
 		return nil, err
 	}
 	return &mentorMentee, nil
+}
+
+func (m *mentorMenteeRepo) GetMentee(mentorID string) ([]model.MentorMentee, error) {
+	var mentorMentees []model.MentorMentee
+	if err := m.db.Preload(clause.Associations).Where("mentor_id = ?", mentorID).Find(&mentorMentees).Error; err != nil {
+		return nil, err
+	}
+	return mentorMentees, nil
 }
 
 func (m *mentorMenteeRepo) List() ([]model.MentorMentee, error) {
