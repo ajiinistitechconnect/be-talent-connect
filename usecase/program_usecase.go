@@ -35,6 +35,7 @@ func (p *programUsecase) FindAll() ([]model.Program, error) {
 }
 
 func (p *programUsecase) FindById(id string) (*model.Program, error) {
+	// group the activities
 	return p.repo.Get(id)
 }
 
