@@ -11,10 +11,20 @@ import (
 type ParticipantRepo interface {
 	BaseRepository[model.Participant]
 	GetByProgram(id string) ([]model.Participant, error)
+	GetEvaluationByStage(participant_id string, stage string) (model.Participant, error)
 }
 
 type participantRepo struct {
 	db *gorm.DB
+}
+
+func (p *participantRepo) GetEvaluationByStage(participant_id string, stage string) (model.Participant, error) {
+	var payload model.Participant
+	err := p.db.Preload("Evaluations", "evaluations.stage = ?", stage).First(&payload, "participants.id = ?", participant_id).Error
+	if err != nil {
+		return model.Participant{}, err
+	}
+	return payload, nil
 }
 
 func (m *participantRepo) Save(payload *model.Participant) error {

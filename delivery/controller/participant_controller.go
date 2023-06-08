@@ -24,6 +24,16 @@ func (u *ParticipantController) listHandler(c *gin.Context) {
 	u.NewSuccessSingleResponse(c, participants, "OK")
 }
 
+func (u *ParticipantController) getEvalHandler(c *gin.Context) {
+	id := c.Param("id")
+	participants, err := u.uc.GetEvaluationScore(id)
+	if err != nil {
+		u.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	u.NewSuccessSingleResponse(c, participants, "OK")
+}
+
 func (r *ParticipantController) createHandler(c *gin.Context) {
 	var payload model.Participant
 	if err := r.ParseRequestBody(c, &payload); err != nil {
@@ -69,6 +79,7 @@ func NewParticipantController(r *gin.Engine, uc usecase.ParticipantUsecase) *Par
 		uc:     uc,
 	}
 	r.GET("/participants", controller.listHandler)
+	r.GET("/participants/evaluation/:id", controller.getEvalHandler)
 	r.PUT("/participants", controller.updateHandler)
 	r.POST("/participants", controller.createHandler)
 	r.DELETE("/participants/:id", controller.deleteHandler)

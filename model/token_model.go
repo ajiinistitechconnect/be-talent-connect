@@ -5,4 +5,5 @@ type TokenModel struct {
 	LastName  string
 	Email     string
 	Role      []string
+	ID        string
 }

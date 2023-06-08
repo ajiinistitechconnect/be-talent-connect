@@ -33,7 +33,7 @@ func (a *activityRepo) Delete(id string) error {
 // Get implements ActivityRepo
 func (a *activityRepo) Get(id string) (*model.Activity, error) {
 	var payload model.Activity
-	err := a.db.First(&payload, "id = ?", id).Error
+	err := a.db.Preload("Program").Preload("Program.Participants.User").First(&payload, "id = ?", id).Error
 	if err != nil {
 		return nil, err
 	}

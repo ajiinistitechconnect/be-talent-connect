@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/alwinihza/talent-connect-be/delivery/api/request"
@@ -111,7 +110,6 @@ func (q *questionAnswerUsecase) ScoreByCategory(evaluation_id string, category_i
 		score += float64(ans) / float64(max_option) * 100
 	}
 	score /= float64(len(question_id))
-	fmt.Println("score", score)
 	return score, nil
 }
 
@@ -134,14 +132,13 @@ func (q *questionAnswerUsecase) UpdateEvaluationScore(evaluation_id string, prog
 			return err
 		}
 		tempScore := score * (evaluationCategory.CategoryWeight / 100.0)
-		fmt.Println("tempscore", v.ID, tempScore)
 		finalScore += tempScore
 	}
-	fmt.Println("final", finalScore)
 	evaluation, err := q.evaluationRepo.Get(evaluation_id)
 	if err != nil {
 		return err
 	}
+	evaluation.IsEvaluated = true
 	evaluation.Score = finalScore
 	if err := q.evaluationRepo.Save(evaluation); err != nil {
 		return err
