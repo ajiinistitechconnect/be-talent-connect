@@ -24,6 +24,16 @@ func (u *MentorMenteeController) listHandler(c *gin.Context) {
 	u.NewSuccessSingleResponse(c, mentorMentees, "OK")
 }
 
+func (u *MentorMenteeController) getHandler(c *gin.Context) {
+	id := c.Param("mentorId")
+	payload, err := u.uc.FindByMentorId(id)
+	if err != nil {
+		u.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	u.NewSuccessSingleResponse(c, payload, "OK")
+}
+
 func (r *MentorMenteeController) createHandler(c *gin.Context) {
 	var payload model.MentorMentee
 	if err := r.ParseRequestBody(c, &payload); err != nil {
@@ -69,6 +79,7 @@ func NewMentorMenteeController(r *gin.Engine, uc usecase.MentorMenteeUsecase) *M
 		uc:     uc,
 	}
 	r.GET("/mentor-mentees", controller.listHandler)
+	r.GET("/mentor-mentees/:mentorId", controller.getHandler)
 	r.PUT("/mentor-mentees", controller.updateHandler)
 	r.POST("/mentor-mentees", controller.createHandler)
 	r.DELETE("/mentor-mentees/:id", controller.deleteHandler)
