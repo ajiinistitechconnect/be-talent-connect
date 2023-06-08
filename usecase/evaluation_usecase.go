@@ -10,6 +10,7 @@ import (
 type EvaluationUsecase interface {
 	BaseUsecase[model.Evaluation]
 	GetByProgramUser(program_id string, user_id string, stage string) ([]model.Evaluation, error)
+	GetEvaluateeByProgramPanelist(program_id string, panelist_id string) ([]model.Evaluation, error)
 }
 
 type evaluationUsecase struct {
@@ -21,6 +22,9 @@ type evaluationUsecase struct {
 
 func (e *evaluationUsecase) GetByProgramUser(program_id string, user_id string, stage string) ([]model.Evaluation, error) {
 	return e.repo.FilterByProgramUser(program_id, user_id, stage)
+}
+func (e *evaluationUsecase) GetEvaluateeByProgramPanelist(program_id string, panelist_id string) ([]model.Evaluation, error) {
+	return e.repo.FilterByProgramPanelist(program_id, panelist_id)
 }
 
 // DeleteData implements EvaluationUsecase

@@ -105,6 +105,17 @@ func (p *EvaluationController) deleteHandler(c *gin.Context) {
 	c.String(http.StatusNoContent, "")
 }
 
+func (p *EvaluationController) getEvaluationHandler(c *gin.Context) {
+	id := c.Param("id")
+	programId := c.Param("programId")
+	payload, err := p.uc.GetEvaluateeByProgramPanelist(programId, id)
+	if err != nil {
+		p.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	p.NewSuccessSingleResponse(c, payload, "OK")
+}
+
 func NewEvaluationController(r *gin.Engine, auth gin.IRoutes, uc usecase.EvaluationUsecase, user usecase.UserUsecase) *EvaluationController {
 	controller := EvaluationController{
 		router: r,
@@ -115,6 +126,7 @@ func NewEvaluationController(r *gin.Engine, auth gin.IRoutes, uc usecase.Evaluat
 	auth.GET("/evaluation/program/:id", controller.getByProgramHandler)
 	r.GET("/evaluation", controller.listHandler)
 	r.GET("/evaluation/:id", controller.getHandler)
+	r.GET("/evaluation/:id/:programId", controller.getEvaluationHandler)
 	r.POST("/evaluation", controller.createHandler)
 	r.PUT("/evaluation", controller.updateHandler)
 	r.DELETE("/evaluation/:id", controller.deleteHandler)

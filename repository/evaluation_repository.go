@@ -11,6 +11,7 @@ import (
 type EvaluationRepo interface {
 	BaseRepository[model.Evaluation]
 	FilterByProgramUser(program_id string, user_id string, stage string) ([]model.Evaluation, error)
+	FilterByProgramPanelist(program_id string, panelist_id string) ([]model.Evaluation, error)
 }
 
 type evaluationRepo struct {
@@ -27,6 +28,19 @@ func (e *evaluationRepo) FilterByProgramUser(program_id string, user_id string, 
 		return nil, err
 	}
 	return payload, nil
+}
+
+func (e *evaluationRepo) FilterByProgramPanelist(program_id string, panelist_id string) ([]model.Evaluation, error) {
+	var payload []model.Evaluation
+	err := e.db.Preload("Participant").Preload("Participant.User").Joins("JOIN participants ON participants.id=evaluations.participant_id").
+		// Joins("JOIN users on users.id=participants.id").
+		Where("evaluations.panelist_id = ? AND participants.program_id = ? and evaluations.stage = 'final'", panelist_id, program_id).
+		Find(&payload).Error
+	if err != nil {
+		return nil, err
+	}
+	return payload, nil
+
 }
 
 // Delete implements EvaluationRepo

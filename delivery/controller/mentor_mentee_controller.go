@@ -34,6 +34,27 @@ func (u *MentorMenteeController) getHandler(c *gin.Context) {
 	u.NewSuccessSingleResponse(c, payload, "OK")
 }
 
+func (u *MentorMenteeController) getMenteeHandler(c *gin.Context) {
+	id := c.Param("mentorId")
+	payload, err := u.uc.FindByMentorId(id)
+	if err != nil {
+		u.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	u.NewSuccessSingleResponse(c, payload, "OK")
+}
+
+func (u *MentorMenteeController) getMenteeProgramHandler(c *gin.Context) {
+	mentor_id := c.Param("mentorId")
+	program_id := c.Param("programId")
+	payload, err := u.uc.FindByMentorIdProgramId(program_id, mentor_id)
+	if err != nil {
+		u.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	u.NewSuccessSingleResponse(c, payload, "OK")
+}
+
 func (r *MentorMenteeController) createHandler(c *gin.Context) {
 	var payload model.MentorMentee
 	if err := r.ParseRequestBody(c, &payload); err != nil {
@@ -80,6 +101,7 @@ func NewMentorMenteeController(r *gin.Engine, uc usecase.MentorMenteeUsecase) *M
 	}
 	r.GET("/mentor-mentees", controller.listHandler)
 	r.GET("/mentor-mentees/:mentorId", controller.getHandler)
+	r.GET("/mentor-mentees/:mentorId/:programId", controller.getMenteeHandler)
 	r.PUT("/mentor-mentees", controller.updateHandler)
 	r.POST("/mentor-mentees", controller.createHandler)
 	r.DELETE("/mentor-mentees/:id", controller.deleteHandler)
