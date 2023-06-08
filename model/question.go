@@ -6,6 +6,7 @@ type Question struct {
 	Type        string
 	Description string
 	Options     []Option `gorm:"foreignKey:question_id" json:"options,omitempty"`
+	Option      int
 }
 
 type Option struct {

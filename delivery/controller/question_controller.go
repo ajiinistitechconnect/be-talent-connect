@@ -58,7 +58,7 @@ func (p *QuestionController) updateHandler(c *gin.Context) {
 		p.NewFailedResponse(c, http.StatusBadRequest, "Question not valid")
 		return
 	}
-	if err := p.uc.SaveData(&question); err != nil {
+	if err := p.uc.UpdateData(&question); err != nil {
 		p.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}

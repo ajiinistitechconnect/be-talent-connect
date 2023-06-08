@@ -78,13 +78,13 @@ func (c *Config) ReadConfigFile() error {
 		c.ApiConfig.ApiPort = os.Getenv("PORT")
 	}
 
-	// c.SMTPConfig = SMTPConfig{
-	// 	SMTPHost:       os.Getenv("SMTP_HOST"),
-	// 	SMTPPort:       os.Getenv("SMTP_PORT"),
-	// 	SMTPSenderName: os.Getenv("SMTP_SENDER"),
-	// 	SMTPEmail:      os.Getenv("SMTP_EMAIL"),
-	// 	SMTPPassword:   os.Getenv("SMTP_PASS"),
-	// }
+	c.SMTPConfig = SMTPConfig{
+		SMTPHost:       os.Getenv("SMTP_HOST"),
+		SMTPPort:       os.Getenv("SMTP_PORT"),
+		SMTPSenderName: os.Getenv("SMTP_SENDER"),
+		SMTPEmail:      os.Getenv("SMTP_EMAIL"),
+		SMTPPassword:   os.Getenv("SMTP_PASS"),
+	}
 
 	c.TokenConfig = TokenConfig{
 		ApplicationName:     "TALENTCONNECT",

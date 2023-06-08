@@ -41,7 +41,7 @@ func (r *UserController) createHandler(c *gin.Context) {
 	var roleUser []string
 
 	if err := json.Unmarshal([]byte(user), &payload); err != nil {
-		r.NewFailedResponse(c, http.StatusBadRequest, "User not valid")
+		r.NewFailedResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 	if err := json.Unmarshal([]byte(role), &roleUser); err != nil {
@@ -101,12 +101,24 @@ func (r *UserController) deleteHandler(c *gin.Context) {
 	c.String(http.StatusNoContent, "")
 }
 
+func (r *UserController) getHandler(c *gin.Context) {
+	id := c.Param("id")
+	payload, err := r.uc.FindById(id)
+	if err != nil {
+		r.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	r.NewSuccessSingleResponse(c, payload, "OK")
+}
+
 func NewUserController(r *gin.Engine, uc usecase.UserUsecase) *UserController {
 	controller := UserController{
 		router: r,
 		uc:     uc,
 	}
 	r.GET("/users", controller.listHandler)
+	r.GET("/users/:id", controller.getHandler)
 	r.PUT("/users", controller.updateHandler)
 	r.POST("/users", controller.createHandler)
 	// r.DELETE("/farmers/:id", controller.deleteHandler)

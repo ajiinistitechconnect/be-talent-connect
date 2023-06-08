@@ -9,6 +9,7 @@ import (
 
 type QuestionRepo interface {
 	BaseRepository[model.Question]
+	Update(payload *model.Question) error
 }
 
 type questionRepo struct {
@@ -52,6 +53,14 @@ func (q *questionRepo) List() ([]model.Question, error) {
 		return nil, err
 	}
 	return payloads, nil
+}
+
+func (q *questionRepo) Update(payload *model.Question) error {
+	err := q.db.Save(payload).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // Save implements QuestionRepo

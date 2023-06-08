@@ -55,7 +55,9 @@ func (u *userUsecase) SaveData(payload *model.User) error {
 	}
 	body := fmt.Sprintf("Hi %s, You are registered to TalentConnect Platform\n\nYour Password is <b>%s</b>", payload.FirstName, password)
 	log.Println(body)
-	// utils.SendMail([]string{payload.Email}, "TalentConnect Registration", body, u.cfg.SMTPConfig)
+	if err := utils.SendMail([]string{payload.Email}, "TalentConnect Registration", body, u.cfg.SMTPConfig); err != nil {
+		return err
+	}
 	return nil
 }
 
