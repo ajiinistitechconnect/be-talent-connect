@@ -9,6 +9,7 @@ import (
 	"github.com/alwinihza/talent-connect-be/manager"
 	"github.com/alwinihza/talent-connect-be/model"
 	"github.com/alwinihza/talent-connect-be/utils/authenticator"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 )
@@ -39,6 +40,12 @@ func (s *Server) initController() {
 
 func (s *Server) Run() {
 	s.initController()
+
+	s.engine.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"https://talent-connect-dev.netlify.app"},
+		AllowMethods:     []string{"*"},
+		AllowCredentials: true,
+	}))
 	err := s.engine.Run(s.host)
 	if err != nil {
 		panic(err)
