@@ -34,6 +34,32 @@ func (u *UserController) listHandler(c *gin.Context) {
 	u.NewSuccessSingleResponse(c, farmers, "OK")
 }
 
+func (u *UserController) searchMenteeHandler(c *gin.Context) {
+	name := c.DefaultQuery("name", "")
+	mentor_id := c.Param("mentorId")
+	program_id := c.Param("id")
+
+	payload, err := u.uc.SearchAvailableMenteeForMentor(mentor_id, program_id, name)
+	if err != nil {
+		u.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	u.NewSuccessSingleResponse(c, payload, "OK")
+}
+
+func (u *UserController) searchMenteeForJudgesHandler(c *gin.Context) {
+	name := c.DefaultQuery("name", "")
+	panelist_id := c.Param("panelistId")
+	program_id := c.Param("id")
+
+	payload, err := u.uc.SearchAvailableMenteeForJudges(panelist_id, program_id, name)
+	if err != nil {
+		u.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	u.NewSuccessSingleResponse(c, payload, "OK")
+}
+
 func (r *UserController) createHandler(c *gin.Context) {
 	user := c.PostForm("user")
 	role := c.PostForm("role")
@@ -121,6 +147,8 @@ func NewUserController(r *gin.Engine, uc usecase.UserUsecase) *UserController {
 	r.GET("/users/:id", controller.getHandler)
 	r.PUT("/users", controller.updateHandler)
 	r.POST("/users", controller.createHandler)
+	r.GET("/users/mentor/:id/:mentorId", controller.searchMenteeHandler)
+	r.GET("/users/panelist/:id/:panelistId", controller.searchMenteeForJudgesHandler)
 	// r.DELETE("/farmers/:id", controller.deleteHandler)
 	return &controller
 }

@@ -106,9 +106,9 @@ func (p *EvaluationController) deleteHandler(c *gin.Context) {
 }
 
 func (p *EvaluationController) getEvaluationHandler(c *gin.Context) {
-	id := c.Param("id")
+	panelistId := c.Param("id")
 	programId := c.Param("programId")
-	payload, err := p.uc.GetEvaluateeByProgramPanelist(programId, id)
+	payload, err := p.uc.GetEvaluateeByProgramPanelist(programId, panelistId)
 	if err != nil {
 		p.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
 		return

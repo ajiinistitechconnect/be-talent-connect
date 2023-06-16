@@ -12,12 +12,17 @@ type ParticipantUsecase interface {
 	GetEvaluationScore(participant_id string) (model.EvaluationResult, error)
 	ListEvaluationByStage(participant_id string, stage string) (model.Participant, error)
 	CheckEvaluationScore(participant_id string) (model.EvaluationResult, error)
+	ListByProgram(program_id string) ([]model.Participant, error)
 }
 
 type participantUsecase struct {
 	repo    repository.ParticipantRepo
 	user    UserUsecase
 	program ProgramUsecase
+}
+
+func (p *participantUsecase) ListByProgram(program_id string) ([]model.Participant, error) {
+	return p.repo.GetByProgram(program_id)
 }
 
 func (p *participantUsecase) ListEvaluationByStage(participant_id string, stage string) (model.Participant, error) {

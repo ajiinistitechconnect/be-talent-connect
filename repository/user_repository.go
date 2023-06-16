@@ -12,10 +12,44 @@ type UserRepo interface {
 	Update(*model.User) error
 	SearchByEmail(email string) (*model.User, error)
 	SearchByRole(role string) ([]model.User, error)
+	SearchForMentee(program_id string, mentor_id string, name string) ([]model.User, error)
+	SearchMenteeForJudges(program_id string, panelist_id string, name string) ([]model.User, error)
 }
 
 type userRepo struct {
 	db *gorm.DB
+}
+
+func (u *userRepo) SearchForMentee(program_id string, mentor_id string, name string) ([]model.User, error) {
+	var payload []model.User
+
+	stmt := u.db.Joins("JOIN participants p on p.program_id = ? and users.id=p.user_id", program_id)
+	if name != "" {
+		nameSearch := "%" + name + "%"
+		stmt = stmt.Where("users.first_name ilike ? or users.last_name ilike ?", nameSearch, nameSearch)
+	}
+	stmt = stmt.Where("users.id not in (select participant_id from mentor_mentees where program_id = ? and mentor_id = ?)", program_id, mentor_id)
+	err := stmt.Find(&payload).Error
+	if err != nil {
+		return nil, err
+	}
+	return payload, nil
+}
+
+func (u *userRepo) SearchMenteeForJudges(program_id string, panelist_id string, name string) ([]model.User, error) {
+	var payload []model.User
+
+	stmt := u.db.Joins("JOIN participants p on p.program_id = ? and users.id=p.user_id", program_id)
+	if name != "" {
+		nameSearch := "%" + name + "%"
+		stmt = stmt.Where("users.first_name ilike ? or users.last_name ilike ?", nameSearch, nameSearch)
+	}
+	stmt = stmt.Where("users.id not in (select pa.user_id from participants pa join evaluations e on e.participant_id = pa.id and e.stage = 'mid' where e.panelist_id = ? and pa.program_id = ?)", panelist_id, program_id)
+	err := stmt.Find(&payload).Error
+	if err != nil {
+		return nil, err
+	}
+	return payload, nil
 }
 
 func (u *userRepo) Save(payload *model.User) error {
