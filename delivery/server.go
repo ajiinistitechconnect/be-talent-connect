@@ -42,8 +42,9 @@ func (s *Server) Run() {
 	s.initController()
 
 	s.engine.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"https://talent-connect-dev.netlify.app"},
+		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"*"},
+		AllowHeaders:     []string{"Content-Type", " Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "accept", "origin", "Cache-Control", "X-Requested-With"},
 		AllowCredentials: true,
 	}))
 	err := s.engine.Run(s.host)
