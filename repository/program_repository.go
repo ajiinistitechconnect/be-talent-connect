@@ -24,6 +24,7 @@ type programRepo struct {
 func (p *programRepo) GetByPanelist(panelist_id string) ([]model.Program, error) {
 	var programs []model.Program
 	err := p.db.
+		Preload(clause.Associations).
 		Joins("JOIN participants ON participants.program_id = programs.id").
 		Joins("JOIN evaluations ON evaluations.participant_id = participants.id").
 		Group("programs.id").
@@ -37,6 +38,7 @@ func (p *programRepo) GetByPanelist(panelist_id string) ([]model.Program, error)
 func (p *programRepo) GetByParticipant(participant_id string) ([]model.Program, error) {
 	var programs []model.Program
 	err := p.db.
+		Preload(clause.Associations).
 		Joins("JOIN participants ON participants.program_id = programs.id").
 		Group("programs.id").
 		Find(&programs, "participants.user_id = ?", participant_id).Error
@@ -49,6 +51,7 @@ func (p *programRepo) GetByParticipant(participant_id string) ([]model.Program, 
 func (p *programRepo) GetByMentor(mentor_id string) ([]model.Program, error) {
 	var programs []model.Program
 	err := p.db.
+		Preload(clause.Associations).
 		Joins("JOIN mentor_mentees ON mentor_mentees.program_id = programs.id").
 		Group("programs.id").
 		Find(&programs, "mentor_mentees.mentor_id = ?", mentor_id).Error
