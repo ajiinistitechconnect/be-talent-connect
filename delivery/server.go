@@ -41,12 +41,6 @@ func (s *Server) initController() {
 func (s *Server) Run() {
 	s.initController()
 
-	s.engine.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"https://talent-connect-dev.netlify.app"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Content-Type", " Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "accept", "origin", "Cache-Control", "X-Requested-With"},
-		AllowCredentials: true,
-	}))
 	err := s.engine.Run(s.host)
 	if err != nil {
 		panic(err)
@@ -95,6 +89,13 @@ func NewServer() *Server {
 			&model.Participant{},
 		)
 	})
+
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"https://talent-connect-dev.netlify.app"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Content-Type", " Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "accept", "origin", "Cache-Control", "X-Requested-With"},
+		AllowCredentials: true,
+	}))
 
 	auth := r.Group("/auth").Use(middleware.NewTokenValidator(tokenService).RequireToken())
 
