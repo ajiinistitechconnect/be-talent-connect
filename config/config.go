@@ -44,12 +44,19 @@ type RedisConfig struct {
 	Db       int
 }
 
+type GoogleOAuthConfig struct {
+	GoogleClientID         string
+	GoogleClientSecret     string
+	GoogleOAuthRedirectUrl string
+}
+
 type Config struct {
 	DbConfig
 	ApiConfig
 	SMTPConfig
 	TokenConfig
 	RedisConfig
+	GoogleOAuthConfig
 }
 
 func (c *Config) ReadConfigFile() error {
@@ -98,6 +105,10 @@ func (c *Config) ReadConfigFile() error {
 		Password: os.Getenv("REDIS_PASSWORD"),
 		Db:       0,
 	}
+
+	c.GoogleOAuthConfig.GoogleClientID = os.Getenv("GOOGLE_OAUTH_CLIENT_ID")
+	c.GoogleOAuthConfig.GoogleClientSecret = os.Getenv("GOOGLE_OAUTH_CLIENT_SECRET")
+	c.GoogleOAuthConfig.GoogleOAuthRedirectUrl = os.Getenv("GOOGLE_OAUTH_REDIRECT_URL")
 	// c.SMTPEmail == "" || c.SMTPHost == "" || c.SMTPPassword == "" || c.SMTPPort == "" || c.SMTPSenderName == ""
 
 	if c.DbConfig.Host == "" || c.DbConfig.Name == "" || c.DbConfig.Password == "" || c.DbConfig.Port == "" || c.DbConfig.User == "" {

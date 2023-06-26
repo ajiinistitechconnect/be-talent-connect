@@ -36,7 +36,7 @@ func (p *ProgramController) listAuthHandler(c *gin.Context) {
 				p.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
 				return
 			}
-		case "panelist":
+		case "judges":
 			programListRes.Panelist, err = p.uc.GetByRole(v, user.ID)
 			if err != nil {
 				p.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
@@ -48,7 +48,7 @@ func (p *ProgramController) listAuthHandler(c *gin.Context) {
 				p.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
 				return
 			}
-		case "participant":
+		case "mentee":
 			programListRes.Participant, err = p.uc.GetByRole(v, user.ID)
 			if err != nil {
 				p.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
