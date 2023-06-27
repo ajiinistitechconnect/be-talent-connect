@@ -93,7 +93,7 @@ func (p *programRepo) GetQuestions(id string) (*model.Program, error) {
 
 func (p *programRepo) List() ([]model.Program, error) {
 	var programs []model.Program
-	err := p.db.Find(&programs).Error
+	err := p.db.Preload("Participants").Find(&programs).Error
 	if err != nil {
 		return nil, err
 	}

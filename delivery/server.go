@@ -20,6 +20,7 @@ type Server struct {
 	authRoute    gin.IRoutes
 	host         string
 	tokenService authenticator.AccessToken
+	cfg          config.Config
 }
 
 func (s *Server) initController() {
@@ -33,7 +34,7 @@ func (s *Server) initController() {
 	controller.NewQuestionController(s.engine, s.ucManager.QuestionUc())
 	controller.NewQuestionCategoryController(s.engine, s.ucManager.QuestionCategoryUc())
 	controller.NewEvaluationCategoryController(s.engine, s.ucManager.EvaluationCategoryUc())
-	controller.NewAuthController(s.engine, s.ucManager.AuthUc(), s.tokenService)
+	controller.NewAuthController(s.engine, s.ucManager.AuthUc(), s.tokenService, s.cfg)
 	controller.NewEvaluationController(s.engine, s.authRoute, s.ucManager.EvaluationUc(), s.ucManager.UserUc())
 	controller.NewQuestionAnswerController(s.engine, s.ucManager.QuestionAnswerUc())
 }
@@ -41,11 +42,6 @@ func (s *Server) initController() {
 func (s *Server) Run() {
 	s.initController()
 
-	s.engine.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"https://talent-connect-dev.netlify.app"},
-		AllowMethods:     []string{"*"},
-		AllowCredentials: true,
-	}))
 	err := s.engine.Run(s.host)
 	if err != nil {
 		panic(err)
@@ -95,6 +91,13 @@ func NewServer() *Server {
 		)
 	})
 
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"https://talent-connect-dev.netlify.app"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Content-Type", " Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "accept", "origin", "Cache-Control", "X-Requested-With"},
+		AllowCredentials: true,
+	}))
+
 	auth := r.Group("/auth").Use(middleware.NewTokenValidator(tokenService).RequireToken())
 
 	return &Server{
@@ -103,5 +106,6 @@ func NewServer() *Server {
 		authRoute:    auth,
 		host:         fmt.Sprintf("%s:%s", cfg.ApiHost, cfg.ApiPort),
 		tokenService: tokenService,
+		cfg:          *cfg,
 	}
 }

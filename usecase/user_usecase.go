@@ -1,9 +1,6 @@
 package usecase
 
 import (
-	"fmt"
-	"log"
-
 	"github.com/alwinihza/talent-connect-be/config"
 	"github.com/alwinihza/talent-connect-be/model"
 	"github.com/alwinihza/talent-connect-be/repository"
@@ -52,22 +49,22 @@ func (u *userUsecase) SaveData(payload *model.User) error {
 	if err != gorm.ErrRecordNotFound {
 		return err
 	}
-	password, err := utils.GeneratePassword()
-	if err != nil {
-		return err
-	}
-	payload.Password, err = utils.SaltPassword([]byte(password))
+	// password, err := utils.GeneratePassword()
+	// if err != nil {
+	// 	return err
+	// }
+	payload.Password, err = utils.SaltPassword([]byte("password"))
 	if err != nil {
 		return err
 	}
 	if err := u.repo.Save(payload); err != nil {
 		return err
 	}
-	body := fmt.Sprintf("Hi %s, You are registered to TalentConnect Platform\n\nYour Password is <b>%s</b>", payload.FirstName, password)
-	log.Println(body)
-	if err := utils.SendMail([]string{payload.Email}, "TalentConnect Registration", body, u.cfg.SMTPConfig); err != nil {
-		return err
-	}
+	// body := fmt.Sprintf("Hi %s, You are registered to TalentConnect Platform\n\nYour Password is <b>%s</b>", payload.FirstName, password)
+	// log.Println(body)
+	// if err := utils.SendMail([]string{payload.Email}, "TalentConnect Registration", body, u.cfg.SMTPConfig); err != nil {
+	// 	return err
+	// }
 	return nil
 }
 
