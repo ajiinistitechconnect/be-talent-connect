@@ -5,6 +5,7 @@ import (
 
 	"github.com/alwinihza/talent-connect-be/delivery/api"
 	"github.com/alwinihza/talent-connect-be/delivery/api/request"
+	"github.com/alwinihza/talent-connect-be/delivery/api/response"
 	"github.com/alwinihza/talent-connect-be/model"
 	"github.com/alwinihza/talent-connect-be/usecase"
 	"github.com/gin-gonic/gin"
@@ -71,7 +72,21 @@ func (u *MentoringScheduleController) listMentorHandler(c *gin.Context) {
 		u.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	u.NewSuccessSingleResponse(c, mentoringSchedules, "OK")
+
+	schedules := make(map[string][]model.MentoringSchedule)
+	for _, v := range mentoringSchedules {
+		date := v.StartDate.Local().Format("2 January 2006")
+		schedules[date] = append(schedules[date], v)
+	}
+	var scheduleList []response.MentoringSchedule
+	for i, v := range schedules {
+		schedule := response.MentoringSchedule{
+			Date:               i,
+			MentoringSchedules: v,
+		}
+		scheduleList = append(scheduleList, schedule)
+	}
+	u.NewSuccessSingleResponse(c, scheduleList, "OK")
 }
 
 func (u *MentoringScheduleController) listMenteeHandler(c *gin.Context) {
@@ -81,7 +96,22 @@ func (u *MentoringScheduleController) listMenteeHandler(c *gin.Context) {
 		u.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	u.NewSuccessSingleResponse(c, mentoringSchedules, "OK")
+
+	schedules := make(map[string][]model.MentoringSchedule)
+	for _, v := range mentoringSchedules {
+		date := v.StartDate.Local().Format("2 January 2006")
+		schedules[date] = append(schedules[date], v)
+	}
+	var scheduleList []response.MentoringSchedule
+	for i, v := range schedules {
+		schedule := response.MentoringSchedule{
+			Date:               i,
+			MentoringSchedules: v,
+		}
+		scheduleList = append(scheduleList, schedule)
+	}
+
+	u.NewSuccessSingleResponse(c, scheduleList, "OK")
 }
 
 func (u *MentoringScheduleController) getHandler(c *gin.Context) {
