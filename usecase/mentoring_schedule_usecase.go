@@ -15,6 +15,7 @@ type MentoringScheduleUsecase interface {
 	DeleteData(id string) error
 	FindScheduleByMentorId(id string) ([]model.MentoringSchedule, error)
 	FindScheduleByMenteeId(id string) ([]model.MentoringSchedule, error)
+	SaveFeedbackMentoring(request *model.MentorMenteeSchedule) error
 }
 
 type mentoringScheduleUsecase struct {
@@ -36,6 +37,10 @@ func (m *mentoringScheduleUsecase) FindScheduleByMentorId(id string) ([]model.Me
 
 func (m *mentoringScheduleUsecase) FindScheduleByMenteeId(id string) ([]model.MentoringSchedule, error) {
 	return m.repo.FindByMenteeId(id)
+}
+
+func (m *mentoringScheduleUsecase) SaveFeedbackMentoring(request *model.MentorMenteeSchedule) error {
+	return m.repo.SaveFeedback(request)
 }
 
 func (m *mentoringScheduleUsecase) SaveData(payload *request.MentoringScheduleRequest) error {

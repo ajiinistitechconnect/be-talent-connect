@@ -5,6 +5,7 @@ import (
 
 	"github.com/alwinihza/talent-connect-be/delivery/api"
 	"github.com/alwinihza/talent-connect-be/delivery/api/request"
+	"github.com/alwinihza/talent-connect-be/model"
 	"github.com/alwinihza/talent-connect-be/usecase"
 	"github.com/gin-gonic/gin"
 )
@@ -93,6 +94,21 @@ func (u *MentoringScheduleController) getHandler(c *gin.Context) {
 	u.NewSuccessSingleResponse(c, payload, "OK")
 }
 
+func (r *MentoringScheduleController) updateFeedbackHandler(c *gin.Context) {
+	var payload model.MentorMenteeSchedule
+	if err := r.ParseRequestBody(c, &payload); err != nil {
+		r.NewFailedResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := r.uc.SaveFeedbackMentoring(&payload); err != nil {
+		r.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	r.NewSuccessSingleResponse(c, payload, "OK")
+}
+
 func NewMentoringScheduleController(r *gin.Engine, uc usecase.MentoringScheduleUsecase) *MentoringScheduleController {
 	controller := MentoringScheduleController{
 		router: r,
@@ -104,6 +120,7 @@ func NewMentoringScheduleController(r *gin.Engine, uc usecase.MentoringScheduleU
 	r.GET("/mentoring-schedules/mentee/:id", controller.listMenteeHandler)
 	r.PUT("/mentoring-schedules", controller.updateHandler)
 	r.POST("/mentoring-schedules", controller.createHandler)
+	r.POST("/mentoring-schedules/feedback/", controller.updateFeedbackHandler)
 	r.DELETE("/mentoring-schedules/:id", controller.deleteHandler)
 	return &controller
 }

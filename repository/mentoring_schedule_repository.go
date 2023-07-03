@@ -12,6 +12,7 @@ type MentoringScheduleRepo interface {
 	RemoveAllMentorMentees(mentoringScheduleID string) error
 	FindByMentorId(mentorId string) ([]model.MentoringSchedule, error)
 	FindByMenteeId(mentorId string) ([]model.MentoringSchedule, error)
+	SaveFeedback(request *model.MentorMenteeSchedule) error
 }
 
 type mentoringScheduleRepo struct {
@@ -65,7 +66,30 @@ func (m *mentoringScheduleRepo) Get(id string) (*model.MentoringSchedule, error)
 	if err != nil {
 		return nil, err
 	}
+
+	var mentorMenteeSchedules []model.MentorMenteeSchedule
+	err = m.db.
+		Table("mentor_mentee_schedules").
+		Select("mentor_mentee_schedules.*").
+		Joins("JOIN mentor_mentees ON mentor_mentees.id = mentor_mentee_schedules.mentor_mentee_id").
+		Joins("JOIN mentoring_schedules ON mentoring_schedules.id = mentor_mentee_schedules.mentoring_schedule_id").
+		Where("mentoring_schedules.id = ?", id).
+		Scan(&mentorMenteeSchedules).Error
+	if err != nil {
+		return nil, err
+	}
+
+	mentoringSchedule.MentorMenteeSchedules = mentorMenteeSchedules
 	return &mentoringSchedule, nil
+}
+
+func (m *mentoringScheduleRepo) SaveFeedback(request *model.MentorMenteeSchedule) error {
+	err := m.db.Save(&request).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (m *mentoringScheduleRepo) List() ([]model.MentoringSchedule, error) {
