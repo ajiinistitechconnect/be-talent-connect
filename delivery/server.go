@@ -36,7 +36,7 @@ func (s *Server) initController() {
 	controller.NewEvaluationCategoryController(s.engine, s.ucManager.EvaluationCategoryUc())
 	controller.NewAuthController(s.engine, s.ucManager.AuthUc(), s.tokenService, s.cfg)
 	controller.NewEvaluationController(s.engine, s.authRoute, s.ucManager.EvaluationUc(), s.ucManager.UserUc())
-	controller.NewQuestionAnswerController(s.engine, s.ucManager.QuestionAnswerUc())
+	controller.NewQuestionAnswerController(s.engine, s.authRoute, s.ucManager.QuestionAnswerUc())
 }
 
 func (s *Server) Run() {
@@ -92,7 +92,7 @@ func NewServer() *Server {
 	})
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"https://talent-connect-dev.netlify.app"},
+		AllowOrigins:     []string{"https://talent-connect-dev.netlify.app", "http://localhost:3000"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Content-Type", " Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "accept", "origin", "Cache-Control", "X-Requested-With"},
 		AllowCredentials: true,

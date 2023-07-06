@@ -20,11 +20,11 @@ func (p *programUsecase) GetByRole(role string, id string) ([]model.Program, err
 	switch role {
 	case "admin":
 		return p.repo.List()
-	case "panelist":
+	case "judges":
 		return p.repo.GetByPanelist(id)
 	case "mentor":
 		return p.repo.GetByMentor(id)
-	case "participant":
+	case "mentee":
 		return p.repo.GetByParticipant(id)
 	}
 	return nil, nil

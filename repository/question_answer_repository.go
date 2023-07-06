@@ -22,7 +22,7 @@ type questionAnswerRepo struct {
 // GetByEvaluation implements QuestionAnswerRepo.
 func (q *questionAnswerRepo) GetByEvaluation(id string) ([]model.QuestionAnswer, error) {
 	var payload []model.QuestionAnswer
-	err := q.db.Find(&payload, "evaluation_id = ?", id).Error
+	err := q.db.Joins("Answer").Select("question_answers.question_id").Find(&payload, "evaluation_id = ?", id).Error
 	if err != nil {
 		return nil, err
 	}

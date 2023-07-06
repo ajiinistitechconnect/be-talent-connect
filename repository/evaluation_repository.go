@@ -61,7 +61,7 @@ func (e *evaluationRepo) Delete(id string) error {
 // Get implements EvaluationRepo
 func (e *evaluationRepo) Get(id string) (*model.Evaluation, error) {
 	var payload model.Evaluation
-	err := e.db.Preload(clause.Associations).First(&payload, "id = ?", id).Error
+	err := e.db.Preload(clause.Associations).Preload("Participant.User").Preload("QuestionAnswers").First(&payload, "id = ?", id).Error
 	if err != nil {
 		return nil, err
 	}
