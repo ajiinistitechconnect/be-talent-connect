@@ -86,6 +86,7 @@ func NewServer() *Server {
 			&model.Evaluation{},
 			&model.MentorMentee{},
 			&model.MentoringSchedule{},
+			&model.MentorMenteeSchedule{},
 			&model.Activity{},
 			&model.Participant{},
 		)
