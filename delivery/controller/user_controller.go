@@ -60,6 +60,18 @@ func (u *UserController) searchMenteeForJudgesHandler(c *gin.Context) {
 	u.NewSuccessSingleResponse(c, payload, "OK")
 }
 
+func (u *UserController) searchMenteeForProgramHandler(c *gin.Context) {
+	name := c.DefaultQuery("name", "")
+	program_id := c.Param("programId")
+
+	payload, err := u.uc.SearchAvailableMenteeForProgram(program_id, name)
+	if err != nil {
+		u.NewFailedResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	u.NewSuccessSingleResponse(c, payload, "OK")
+}
+
 func (r *UserController) createHandler(c *gin.Context) {
 	user := c.PostForm("user")
 	role := c.PostForm("role")
@@ -149,6 +161,7 @@ func NewUserController(r *gin.Engine, uc usecase.UserUsecase) *UserController {
 	r.POST("/users", controller.createHandler)
 	r.GET("/users/mentor/:id/:mentorId", controller.searchMenteeHandler)
 	r.GET("/users/panelist/:id/:panelistId", controller.searchMenteeForJudgesHandler)
+	r.GET("/users/mentee/:programId", controller.searchMenteeForProgramHandler)
 	// r.DELETE("/farmers/:id", controller.deleteHandler)
 	return &controller
 }

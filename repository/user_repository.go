@@ -13,11 +13,28 @@ type UserRepo interface {
 	SearchByEmail(email string) (*model.User, error)
 	SearchByRole(role string) ([]model.User, error)
 	SearchForMentee(program_id string, mentor_id string, name string) ([]model.User, error)
+	SearchForMenteeProgram(program_id string, name string) ([]model.User, error)
 	SearchMenteeForJudges(program_id string, panelist_id string, name string) ([]model.User, error)
 }
 
 type userRepo struct {
 	db *gorm.DB
+}
+
+func (u *userRepo) SearchForMenteeProgram(program_id string, name string) ([]model.User, error) {
+	var payload []model.User
+
+	stmt := u.db.Joins("JOIN users_roles ON users_roles.user_id = users.id").Joins("JOIN roles ON users_roles.role_id = roles.id").Where("roles.name = 'mentee'")
+	if name != "" {
+		nameSearch := "%" + name + "%"
+		stmt = stmt.Where("users.first_name ilike ? or users.last_name ilike ?", nameSearch, nameSearch)
+	}
+	stmt = stmt.Where("users.id not in (select user_id from participants where program_id = ?)", program_id)
+	err := stmt.Find(&payload).Error
+	if err != nil {
+		return nil, err
+	}
+	return payload, nil
 }
 
 func (u *userRepo) SearchForMentee(program_id string, mentor_id string, name string) ([]model.User, error) {
