@@ -62,12 +62,12 @@ func (e *evaluationUsecase) SaveData(payload *model.Evaluation) error {
 		return err
 	}
 	for _, v := range panelist.Roles {
-		if v.Name == "panelist" {
+		if v.Name == "judges" {
 			payload.Participant = *participant
 			return e.repo.Save(payload)
 		}
 	}
-	return fmt.Errorf("Panelist assigned is not a valid panelist")
+	return fmt.Errorf("Judge assigned is not a valid judge")
 }
 
 func NewEvaluationUsecase(repo repository.EvaluationRepo, user UserUsecase, participant ParticipantUsecase, qa QuestionAnswerUsecase) EvaluationUsecase {

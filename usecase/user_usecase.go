@@ -14,6 +14,7 @@ type UserUsecase interface {
 	UpdateRole(payload *model.User, role []string) error
 	UpdateData(payload *model.User) error
 	SearchByRole(role string) ([]model.User, error)
+	SearchAvailableMenteeForProgram(program_id string, name string) ([]model.User, error)
 	SearchAvailableMenteeForMentor(mentor_id string, program_id string, name string) ([]model.User, error)
 	SearchAvailableMenteeForJudges(panelist_id_id string, program_id string, name string) ([]model.User, error)
 }
@@ -22,6 +23,10 @@ type userUsecase struct {
 	repo repository.UserRepo
 	role RoleUsecase
 	cfg  *config.Config
+}
+
+func (u *userUsecase) SearchAvailableMenteeForProgram(program_id string, name string) ([]model.User, error) {
+	return u.repo.SearchForMenteeProgram(program_id, name)
 }
 
 func (u *userUsecase) SearchAvailableMenteeForMentor(mentor_id string, program_id string, name string) ([]model.User, error) {

@@ -136,7 +136,7 @@ func (m *participantUsecase) SaveData(payload *model.Participant) error {
 		return err
 	}
 	for _, v := range user.Roles {
-		if v.Name == "participant" {
+		if v.Name == "mentee" {
 			payload.User = *user
 
 			return m.repo.Save(payload)

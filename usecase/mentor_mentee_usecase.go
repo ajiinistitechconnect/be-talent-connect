@@ -62,7 +62,7 @@ func (m *mentorMenteeUsecase) SaveData(payload *model.MentorMentee) error {
 		return err
 	}
 	for _, v := range mentee.Roles {
-		if v.Name == "participant" {
+		if v.Name == "mentee" {
 			flag = true
 		}
 	}
