@@ -13,3 +13,8 @@ type Activity struct {
 	Date       string
 	Activities []model.Activity
 }
+
+type MentoringSchedule struct {
+	Date               string
+	MentoringSchedules []model.MentoringSchedule
+}
